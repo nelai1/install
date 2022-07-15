@@ -13,11 +13,13 @@
 --  CMP
 --  LSP
 
+        -- border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
 -- =====
 -- Packages
 -- =====
 -- install packer
 -- Use a protected call so we don't error out on first use
+--
 local _, packer = pcall(require, "packer")
 local is_bootstrap = false
 local install_path = vim.fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
@@ -33,9 +35,9 @@ end
 packer.init { display = { open_fn = function() return require("packer.util").float { border = "rounded" } end, }, }
 
 packer.startup(function(use)
-    use('wbthomason/packer.nvim') -- Packer can manage itself
-    use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
-    use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
+    use('wbthomason/packer.nvim')      -- Packer can manage itself
+    use "nvim-lua/popup.nvim"          -- An implementation of the Popup API from vim in Neovim
+    use "nvim-lua/plenary.nvim"        -- Useful lua functions used ny lots of plugins
     use 'kyazdani42/nvim-web-devicons' -- optional, for file icons
 
     -- colors
@@ -51,41 +53,44 @@ packer.startup(function(use)
     use "folke/tokyonight.nvim"
     use "andersevenrud/nordic.nvim"
 
-    use 'tpope/vim-fugitive' -- Git commands in nvim
-    use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
-    use 'lewis6991/gitsigns.nvim' -- Add git related info in the signs columns and popups
-    use { 'numToStr/Comment.nvim' } -- easy commenting
+    use 'tpope/vim-fugitive'        -- Git commands in nvim
+    use 'tpope/vim-rhubarb'         -- Fugitive-companion to interact with github
+    use 'lewis6991/gitsigns.nvim'   -- Add git related info in the signs columns and popups
 
-    use 'kyazdani42/nvim-tree.lua'
+    -- quality of life
+    use "machakann/vim-sandwich"              -- modify {}, (), etc
+    use 'numToStr/Comment.nvim'               -- easy commenting
+    use 'lukas-reineke/indent-blankline.nvim' -- Add indentation guides even on blank lines
+    use 'kyazdani42/nvim-tree.lua'            -- tree file browsers
+    use {'akinsho/bufferline.nvim',           -- show tabs at top
+        tag = "v2.*",
+        requires = 'kyazdani42/nvim-web-devicons'}
 
     -- Treesitter  Highlight, edit, and navigate code
-    use { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate", }
+    use { "nvim-treesitter/nvim-treesitter",
+        run = ":TSUpdate", }
     use 'nvim-treesitter/nvim-treesitter-textobjects' --  Additional textobjects for treesitter
-    use "p00f/nvim-ts-rainbow"
 
     -- Autocompletion
-    use 'hrsh7th/nvim-cmp'
-    use "hrsh7th/cmp-buffer" -- buffer completions
-    use "hrsh7th/cmp-path" -- path completions
-    use "hrsh7th/cmp-cmdline" -- cmdline completions
-    use "hrsh7th/cmp-nvim-lsp" -- 
-    use "hrsh7th/cmp-nvim-lua"
-    use "saadparwaiz1/cmp_luasnip" -- snippet completions
+    use 'hrsh7th/nvim-cmp'                -- base plugin
+    use "hrsh7th/cmp-buffer"              -- buffer completions
+    use "hrsh7th/cmp-path"                -- path completions
+    use "hrsh7th/cmp-cmdline"             -- cmdline completions
+    use "hrsh7th/cmp-nvim-lsp"            -- language server completion
+    use "hrsh7th/cmp-nvim-lua"            -- internal nvim-lua completion
+    use "saadparwaiz1/cmp_luasnip"        -- snippet completions
 
-    use "L3MON4D3/LuaSnip" -- needed for cmp snippet engine
-    use "rafamadriz/friendly-snippets" -- a bunch of snippets to use
+    use "L3MON4D3/LuaSnip"                -- needed for cmp snippet engine
+    use "rafamadriz/friendly-snippets"    -- a bunch of snippets to use
 
-    -- LSP
-    use 'neovim/nvim-lspconfig' -- base plugin
+    -- LSP - language server protocol
+    use 'neovim/nvim-lspconfig'           -- base plugin
     use 'williamboman/nvim-lsp-installer' -- Automatically/easy install language servers to stdpath
 
-    use 'lukas-reineke/indent-blankline.nvim' -- Add indentation guides even on blank lines
-
-    use 'nvim-telescope/telescope.nvim' -- Fuzzy Finder (files, lsp, etc)
-    use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable "make" == 1 }
-
-
-use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
+    -- Telescope
+    use 'nvim-telescope/telescope.nvim'   -- Fuzzy Finder (files, lsp, etc)
+    use { 'nvim-telescope/telescope-fzf-native.nvim',
+        run = 'make', cond = vim.fn.executable "make" == 1 }
 
 
     if is_bootstrap then
@@ -107,38 +112,38 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 -- =====
 -- options
 -- =====
-vim.opt.hlsearch = true -- Set highlight on search
+vim.opt.hlsearch = true    -- Set highlight on search
 --vim.opt.clipboard = "unnamedplus" -- allows neovim to access the system clipboard
 vim.opt.number = true
 vim.opt.relativenumber = false
-vim.opt.mouse = 'a' -- Enable mouse mode
+vim.opt.mouse = 'a'        -- Enable mouse mode
 vim.opt.breakindent = true -- wrapped lines will have same indentation
-vim.opt.undofile = true -- Save undo history
-vim.opt.ignorecase = true -- Case insensitive searching UNLESS /C or capital in search
+vim.opt.undofile = true    -- Save undo history
+vim.opt.ignorecase = true  -- Case insensitive searching UNLESS /C or capital in search
 vim.opt.smartcase = true
-vim.opt.updatetime = 250 -- Decrease update time
+vim.opt.updatetime = 250   -- Decrease update time
 vim.opt.signcolumn = 'yes' -- extra space for symbols next to numbers
 
 vim.opt.completeopt = 'menu,menuone,noselect' -- Set completeopt to have a better completion experience
-vim.opt.cmdheight = 2 -- more space in command line
+vim.opt.cmdheight = 2      -- more space in command line
 
 vim.opt.fileencoding = "utf-8"
 
-vim.opt.pumheight = 10 -- pop up menu height
-vim.opt.showmode = false -- show stuff like INSERT
+vim.opt.pumheight = 10     -- pop up menu height
+vim.opt.showmode = false   -- show stuff like INSERT
 vim.opt.showtabline = 2
 vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.swapfile = false
 vim.opt.cursorline = true
-vim.opt.scrolloff = 4 -- keep lines above/below
+vim.opt.scrolloff = 4      -- keep lines above/below
 vim.opt.sidescrolloff = 4
 
 vim.opt.smartindent = true
 vim.opt.tabstop = 4
-vim.opt.softtabstop = 4 --tab counts as this many characters
-vim.opt.shiftwidth = 4 --how much to indent by defaul
-vim.opt.expandtab = true -- all tabs are replaces by spaces
+vim.opt.softtabstop = 4    --tab counts as this many characters
+vim.opt.shiftwidth = 4     --how much to indent by defaul
+vim.opt.expandtab = true    -- all tabs are replaces by spaces
 -- TODO: make python specific
 vim.opt.termguicolors = true
 vim.opt.winblend = 15 -- pseudo transperancy: 0 nothing - 100 transparaent
@@ -150,6 +155,7 @@ vim.cmd [[colorscheme gruvbox-material]]
 local keymap = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 local term_opts = { silent = true }
+-- set up leader to SPACE
 keymap("", "<Space>", "<Nop>", opts)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -202,27 +208,17 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist)
 
 
--- ------------
+-- ============
 -- Plugins
--- ------------
+-- ============
 
 -- -----
 -- Comment
----
+-- -----
+-- comment anywhere with Ctrl+/
 require('Comment').setup {
-    toggler = {
-        ---Line-comment toggle keymap
-        line = '<C-_>',
-        ---Block-comment toggle keymap
-        block = 'cb',
-    },
-    -- -LHS of operator-pending mappings in NORMAL + VISUAL mode
-    opleader = {
-    --     ---Line-comment keymap
-        line = '<C-_>',
-    --     ---Block-comment keymap
-    --     block = 'cb',
-    },
+    toggler = { line = '<C-_>'},
+    opleader = { line = '<C-_>'},
     extra = {
         eol = '<C-a>', -- at the end of line 
         above = 'gcO', -- on the line above
@@ -233,8 +229,9 @@ require('Comment').setup {
 -- ======
 -- indent_blankline
 -- ======
+-- Show very nice lines for indentation level
 require('indent_blankline').setup {
-    indentLine_enable = false,
+    indent_blankline_enabled = false,
 }
 keymap('n', '<leader>i', ':IndentBlanklineToggle<CR>', opts)
 
@@ -364,12 +361,12 @@ cmp.setup.cmdline('/', {
     mapping = cmpm.preset.cmdline(),
     sources = { { name = 'buffer' } }
 })
+
 -- =====
 -- LSP
 -- =====
 require("nvim-lsp-installer").setup()
 local lspconfig = require("lspconfig")
-
 
 local signs_diagnostic = {
     { name = "DiagnosticSignError", text = "" },
@@ -387,10 +384,6 @@ vim.diagnostic.config({
     underline = true,
     severity_sort = false,
     float = {
-        -- focusable = false,
-        -- style = "minimal",
-        -- border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
-        -- border = 'single',
         border = "none", -- seems currently broken try with 'single'
         source = "always",
         scope = 'line',
@@ -399,8 +392,8 @@ vim.diagnostic.config({
     },
 })
 
+-- Set autocommands conditional on server_capabilities
 local function lsp_highlight_document(client)
-    -- Set autocommands conditional on server_capabilities
     if client.resolved_capabilities.document_highlight then
         vim.api.nvim_exec(
             [[
@@ -441,12 +434,15 @@ end
 
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
+-- CONFIG PER LANGUAGE
+-- PYTHON
 lspconfig['pyright'].setup(
     {
         on_attach = on_attach,
         capabilities = capabilities,
     }
 )
+-- LUA
 lspconfig['sumneko_lua'].setup(
     {
         on_attach = on_attach,
@@ -513,19 +509,32 @@ telescope.setup {
     },
 }
 local tb = require('telescope.builtin')
+
 -- in vim help: amazing!!!
-vim.keymap.set('n', '<leader>sh', tb.help_tags, { desc = '[S]earch [H]elp' })
+vim.keymap.set('n', '<leader>sh',
+    tb.help_tags, { desc = '[S]earch [H]elp' })
+
 -- from pwd down
-vim.keymap.set('n', '<leader>sf', tb.find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader>sf',
+    tb.find_files, { desc = '[S]earch [F]iles' })
+
 -- grep word under cursor
-vim.keymap.set('n', '<leader>sw', tb.grep_string, { desc = '[S]earch current [W]ord' })
+vim.keymap.set('n', '<leader>sw',
+    tb.grep_string, { desc = '[S]earch current [W]ord' })
+
 -- open rg window
 vim.keymap.set('n', '<leader>sg', tb.live_grep, { desc = '[S]earch by [G]rep' })
+
 -- basically minibuf of diagnostics
-vim.keymap.set('n', '<leader>sd', tb.diagnostics, { desc = '[S]earch [D]iagnostics' })
-vim.keymap.set('n', '<leader>?', tb.oldfiles, { desc = '[?] Find recently opened files' })
+vim.keymap.set('n', '<leader>sd',
+    tb.diagnostics, { desc = '[S]earch [D]iagnostics' })
+
+vim.keymap.set('n', '<leader>?',
+    tb.oldfiles, { desc = '[?] Find recently opened files' })
+
 -- open buffer
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader><space>',
+    require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
 
 -- find here - in this file
 vim.keymap.set('n', '<leader>/', function()
