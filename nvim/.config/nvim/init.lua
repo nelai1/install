@@ -56,6 +56,7 @@ packer.startup(function(use)
     use 'tpope/vim-fugitive'        -- Git commands in nvim
     use 'tpope/vim-rhubarb'         -- Fugitive-companion to interact with github
     use 'lewis6991/gitsigns.nvim'   -- Add git related info in the signs columns and popups
+    use { 'TimUntersberger/neogit', requires = 'nvim-lua/plenary.nvim' }
 
     -- quality of life
     use "machakann/vim-sandwich"              -- modify {}, (), etc
