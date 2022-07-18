@@ -20,21 +20,25 @@
 -- install packer
 -- Use a protected call so we don't error out on first use
 --
-local _, packer = pcall(require, "packer")
-local is_bootstrap = false
-local install_path = vim.fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
-if vim.fn.empty(install_path) > 0 then
-    is_bootstrap = true
-    vim.fn.system({
-        'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path
-    })
-    print('I installed ' .. install_path)
+local packer_is_there, packer = pcall(require, "packer")
+if not packer_is_there then
+    print('We need packer')
+    local install_path = vim.fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
+    if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+        vim.fn.system({
+            'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path
+        })
+    end
+    -- vim.o.runtimepath = vim.fn.stdpath('data') .. '/site/pack/*/start/*,' .. vim.o.runtimepath
+    vim.cmd 'packadd packer.nvim'
+    local _, packer = pcall(require, "packer")
+else
+    -- Have packer use a popup window
+    packer.init { display = { open_fn = function() return require("packer.util").float { border = "rounded" } end, }, }
 end
 
--- Have packer use a popup window
-packer.init { display = { open_fn = function() return require("packer.util").float { border = "rounded" } end, }, }
 
-packer.startup(function(use)
+require('packer').startup(function(use)
     use('wbthomason/packer.nvim')      -- Packer can manage itself
     use "nvim-lua/popup.nvim"          -- An implementation of the Popup API from vim in Neovim
     use "nvim-lua/plenary.nvim"        -- Useful lua functions used ny lots of plugins
@@ -94,13 +98,10 @@ packer.startup(function(use)
         run = 'make', cond = vim.fn.executable "make" == 1 }
 
 
-    if is_bootstrap then
+    if not packer_is_there then
         require('packer').sync()
     end
 end)
-if is_bootstrap then
-    return
-end
 
 -- Automatically source and re-compile packer whenever you save this init.lua
 local packer_group = vim.api.nvim_create_augroup('Packer', { clear = true })
@@ -366,8 +367,8 @@ cmp.setup.cmdline('/', {
 -- =====
 -- LSP
 -- =====
-require("nvim-lsp-installer").setup()
 local lspconfig = require("lspconfig")
+require("nvim-lsp-installer").setup{automatic_installation = true}
 
 local signs_diagnostic = {
     { name = "DiagnosticSignError", text = "" },
@@ -461,6 +462,10 @@ lspconfig['sumneko_lua'].setup(
         },
     }
 )
+
+-- =====
+-- Treesitter
+-- =====
 
 require('nvim-treesitter.configs').setup {
     ensure_installed = { 'lua', 'python', 'markdown' },
