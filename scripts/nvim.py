@@ -2,46 +2,46 @@ import subprocess
 from pathlib import Path
 
 def ensure_bin():
-    bin_path = Path.home() / 'bin'
+    bin_path = Path.home().resolve() / 'bin'
     bin_path.mkdir(exist_ok=True)
     return bin_path
 
-class NVIM:
+def ensure_config():
+    config = Path.home().resolve() / '.config'/ 'nvim'
+    config.mkdir(exist_ok=True)
+    return config / 'init.lua'
 
+class NVIM:
     def __init__(self):
         bin_path = ensure_bin()
         self.path_out = bin_path / 'nvim'
+        self.config_path = ensure_config()
+
 
     def download(self):
         url = ('https://github.com/neovim/neovim/releases/'
         'download/stable/nvim.appimage')
-        if not self.path_out.is_file():
-            print('downloading latest appimage of nvim from master')
-            print(url)
-            cmd = ['wget', str(url), '-O', str(path_out)]
-            result = subprocess.call(cmd)
-            cmd = ['chmod', '+x', str(path_out)]
-            result = subprocess.call(cmd)
+        print('downloading latest appimage of nvim from master')
+        print(url)
+        cmd = ['wget', str(url), '-O', str(self.path_out), '-q']
+        _ = subprocess.call(cmd)
+        cmd = ['chmod', '+x', str(self.path_out)]
+        _ = subprocess.call(cmd)
+    
+    def setup_config(self):
+        url = ('https://raw.githubusercontent.com/nelai1/'
+                'install/main/nvim/.config/nvim/init.lua')
+        print('downloading latest config from master')
+        print(url)
+        cmd = ['wget', str(url), '-O', str(self.config_path)]
+        _ = subprocess.call(cmd)
 
-    def bootstrap_plugin_manager(self):
-        packer_file = Path("~/.local/share/nvim/site/pack/packer/start/packer.nvim")
-        packer_repo = 'https://github.com/wbthomason/packer.nvim'
-        if not packer_file.is_file():
-            print('downloading latest version of packer from ')
-            print(packer_repo)
-            cmd = [ 'git', 'clone', '--depth', '1', packer_repo, packer_file]
-            result = subprocess.call(cmd)
-        else:
-            print('packer already there')
             
 
     def install(self):
         self.download()
-        self.bootstrap_plugin_manager()
+        self.setup_config()
 
 if __name__ == '__main__':
     nvim = NVIM()
     nvim.install()
-    
-
-
