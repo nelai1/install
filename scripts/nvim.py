@@ -33,14 +33,18 @@ class NVIM:
                 'install/main/nvim/.config/nvim/init.lua')
         print('downloading latest config from master')
         print(url)
-        cmd = ['wget', str(url), '-O', str(self.config_path)]
+        cmd = ['wget', str(url), '-O', str(self.config_path), '-q']
         _ = subprocess.call(cmd)
 
             
 
     def install(self):
         self.download()
-        self.setup_config()
+        if self.config_path.exists():
+            print(f'\nConfig {self.config_path} already exist. '
+                      '\nRemove to get a fresh version\n')
+        else:
+            self.setup_config()
 
 if __name__ == '__main__':
     nvim = NVIM()
