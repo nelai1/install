@@ -70,6 +70,7 @@ require('packer').startup(function(use)
     use {'akinsho/bufferline.nvim',           -- show tabs at top
         tag = "v2.*",
         requires = 'kyazdani42/nvim-web-devicons'}
+    use 'mileszs/ack.vim'
 
     -- Treesitter  Highlight, edit, and navigate code
     use { "nvim-treesitter/nvim-treesitter",
@@ -93,10 +94,12 @@ require('packer').startup(function(use)
     use 'williamboman/nvim-lsp-installer' -- Automatically/easy install language servers to stdpath
 
     -- Telescope
-    use 'nvim-telescope/telescope.nvim'   -- Fuzzy Finder (files, lsp, etc)
+    use {"nvim-telescope/telescope.nvim",
+        requires = { { "nvim-telescope/telescope-live-grep-args.nvim" }, },
+        config = function() require("telescope").load_extension("live_grep_args") end
+    }
     use { 'nvim-telescope/telescope-fzf-native.nvim',
         run = 'make', cond = vim.fn.executable "make" == 1 }
-
 
     if not packer_is_there then
         require('packer').sync()
@@ -204,7 +207,7 @@ keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_prev)
+vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev)
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist)
@@ -308,29 +311,31 @@ cmp.setup {
         -- do correct thing on button press depending on
         -- state. Example:
         -- select_item from suggestion or jump to next snippet tag
-        ["<C-n>"] = cmpm(function(fallback)
-            if cmp.visible() then
-                cmp.select_next_item()
-            elseif luasnip.expandable() then
-                luasnip.expand()
-            elseif luasnip.expand_or_jumpable() then
-                luasnip.expand_or_jump()
-            elseif check_backspace() then
-                fallback()
-            else
-                fallback()
-            end
-        end, { "i", "s", "c" }),
-
-        ["<C-p>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-                luasnip.jump(-1)
-            else
-                fallback()
-            end
-        end, { "i", "s", }),
+         ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i','c'}),
+['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i','c'}),
+        -- ["<C-n>"] = cmpm(function(fallback)
+        --     if cmp.visible() then
+        --         cmp.select_next_item()
+        --     elseif luasnip.expandable() then
+        --         luasnip.expand()
+        --     elseif luasnip.expand_or_jumpable() then
+        --         luasnip.expand_or_jump()
+        --     elseif check_backspace() then
+        --         fallback()
+        --     else
+        --         fallback()
+        --     end
+        -- end, { "i", "s", 'c'}),
+        --
+        -- ["<C-p>"] = cmp.mapping(function(fallback)
+        --     if cmp.visible() then
+        --         cmp.select_prev_item()
+        --     elseif luasnip.jumpable(-1) then
+        --         luasnip.jump(-1)
+        --     else
+        --         fallback()
+        --     end
+        -- end, { "i", "s", 'c'}),
     },
     -- how the completion menu looks (can be removed)
     formatting = {
@@ -357,6 +362,12 @@ cmp.setup.cmdline(':', {
     sources = cmp.config.sources({
         { name = 'path' },
         { name = 'cmdline' } })
+})
+cmp.setup.cmdline(':e', {
+    mapping = cmpm.preset.cmdline(),
+    sources = cmp.config.sources({
+        { name = 'path' },
+    })
 })
 
 cmp.setup.cmdline('/', {
@@ -479,6 +490,7 @@ require('nvim-treesitter.configs').setup {
 local _, telescope = pcall(require, "telescope")
 pcall(require('telescope').load_extension, 'fzf')
 local actions = require "telescope.actions"
+local lga_actions = require("telescope-live-grep-args.actions")
 
 telescope.setup {
     defaults = {
@@ -513,8 +525,22 @@ telescope.setup {
             },
         },
     },
+    extensions = {
+        live_grep_args = {
+            auto_quoting = true, -- enable/disable auto-quoting
+            mappings = {
+                i = {
+                    ["<C-k>"] = lga_actions.quote_prompt(),
+                    ["<C-l>g"] = lga_actions.quote_prompt({ postfix = ' --iglob ' }),
+                    ["<C-l>t"] = lga_actions.quote_prompt({ postfix = ' -t' }),
+                }
+            }
+        }
+    }
 }
+
 local tb = require('telescope.builtin')
+
 
 -- in vim help: amazing!!!
 vim.keymap.set('n', '<leader>sh',
@@ -529,7 +555,9 @@ vim.keymap.set('n', '<leader>sw',
     tb.grep_string, { desc = '[S]earch current [W]ord' })
 
 -- open rg window
-vim.keymap.set('n', '<leader>sg', tb.live_grep, { desc = '[S]earch by [G]rep' })
+-- vim.keymap.set('n', '<leader>sg', tb.live_grep, { desc = '[S]earch by [G]rep' })
+vim.keymap.set("n", "<leader>sg", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>", { desc = '[S]earch by [G]rep' })
+
 
 -- basically minibuf of diagnostics
 vim.keymap.set('n', '<leader>sd',
@@ -590,3 +618,9 @@ augroup highlight_yank
     au TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=700}
 augroup END
 ]]
+    
+-- =====
+-- ack
+-- =====
+vim.cmd[[ let g:ackprg = 'ag --vimgrep' ]]
+
