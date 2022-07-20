@@ -1,0 +1,16 @@
+alias ls='ls --color'
+
+# GIT
+alias gs='git status'
+alias ga='git add '
+alias gd='git diff '
+alias gm='git commit -m '
+
+alias evim='nvim ~/.config/nvim/init.lua'
+alias ebash='nvim ~/.bashrc'
+alias ealias='nvim ~/.alias'
+
+
+alias ss='source ~/.bashrc'
+
+echo 'aliases sourced'
