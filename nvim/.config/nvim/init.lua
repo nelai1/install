@@ -62,10 +62,11 @@ require('packer').startup(function(use)
     use 'tpope/vim-rhubarb'         -- Fugitive-companion to interact with github
     use 'lewis6991/gitsigns.nvim'   -- Add git related info in the signs columns and popups
     use { 'TimUntersberger/neogit', requires = 'nvim-lua/plenary.nvim' }
+    use 'sindrets/diffview.nvim'    -- companion for neogit
 
     -- quality of life
     use "machakann/vim-sandwich"              -- modify {}, (), etc
-    use 'numToStr/Comment.nvim'               -- easy commenting
+    use 'preservim/nerdcommenter'             -- easy commenting
     use 'lukas-reineke/indent-blankline.nvim' -- Add indentation guides even on blank lines
     use 'kyazdani42/nvim-tree.lua'            -- tree file browsers
     use {'akinsho/bufferline.nvim',           -- show tabs at top
@@ -102,6 +103,19 @@ require('packer').startup(function(use)
     use { 'nvim-telescope/telescope-fzf-native.nvim',
         run = 'make', cond = vim.fn.executable "make" == 1 }
 
+    -- ====
+    -- Language specific
+    -- ====
+    -- MARKDOWN
+    use{ "iamcco/markdown-preview.nvim", -- Preview markdown ...
+        run = function() vim.fn["mkdp#util#install"]() end,
+    }
+    use 'godlygeek/tabular'
+    use 'preservim/vim-markdown'
+    use 'ferrine/md-img-paste.vim'
+
+    use 'vim-test/vim-test'
+
     if not packer_is_there then
         require('packer').sync()
     end
@@ -129,13 +143,16 @@ vim.opt.ignorecase = true  -- Case insensitive searching UNLESS /C or capital in
 vim.opt.smartcase = true
 vim.opt.updatetime = 250   -- Decrease update time
 vim.opt.signcolumn = 'yes' -- extra space for symbols next to numbers
+vim.opt.showmatch = true   -- shortly jump to [{( partner on insert
 
-vim.opt.completeopt = 'menu,menuone,noselect' -- Set completeopt to have a better completion experience
+--vim.opt.completeopt = 'menu,menuone,noselect' -- Set completeopt to have a better completion experience
+vim.opt.completeopt = 'menuone,longest' -- Set completeopt to have a better completion experience
 vim.opt.cmdheight = 2      -- more space in command line
+vim.opt.wildmode='longest:full,full'
 
-vim.opt.fileencoding = "utf-8"
+--vim.opt.fileencoding = "utf-8"
 
-vim.opt.pumheight = 10     -- pop up menu height
+vim.opt.pumheight = 15     -- pop up menu height
 vim.opt.showmode = false   -- show stuff like INSERT
 vim.opt.showtabline = 2
 vim.opt.splitbelow = true
@@ -145,15 +162,24 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 4      -- keep lines above/below
 vim.opt.sidescrolloff = 4
 
+vim.opt.termguicolors = true
+vim.opt.winblend = 15 -- pseudo transperancy: 0 nothing - 100 transparaent
+vim.g.tokyonight_style = 'night'
+vim.g.gruvbox_material_background = 'hard'
+vim.g.gruvbox_material_diagnostic_text_highlight = 0
+vim.g.gruvbox_material_foreground = 'material'
+vim.cmd [[colorscheme tokyonight]]
+-- vim.cmd [[colorscheme gruvbox-material]]
+
 vim.opt.smartindent = true
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4    --tab counts as this many characters
 vim.opt.shiftwidth = 4     --how much to indent by defaul
 vim.opt.expandtab = true    -- all tabs are replaces by spaces
--- TODO: make python specific
-vim.opt.termguicolors = true
-vim.opt.winblend = 15 -- pseudo transperancy: 0 nothing - 100 transparaent
-vim.cmd [[colorscheme gruvbox-material]]
+
+-- ===== Filetype
+-- Markdown
+vim.cmd[[ autocmd FileType markdown set conceallevel=2]]
 
 -- ======
 -- Mappings
@@ -189,6 +215,8 @@ keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 -- Navigate buffers
 keymap("n", "<leader>n", ":bnext<CR>", opts)
 keymap("n", "<leader>p", ":bprevious<CR>", opts)
+vim.keymap.set('n', '<leader>v', ':<C-u>vsplit<CR>')
+vim.keymap.set('n', '<leader>h', ':<C-u>hsplit<CR>')
 
 -- Press jk fast to enter
 keymap("i", "jk", "<ESC>", opts)
@@ -213,7 +241,14 @@ vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev)
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist)
 
+-- special
+--
+-- remove all leading and trailing whitespace: I love it
+vim.keymap.set('n', '<leader>w', ':%s/\\s\\+$//<cr>:let @/=""<CR>')
 
+
+--noremap <leader>q :BD<CR>
+--
 -- ============
 -- Plugins
 -- ============
@@ -221,16 +256,12 @@ vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist)
 -- -----
 -- Comment
 -- -----
--- comment anywhere with Ctrl+/
-require('Comment').setup {
-    toggler = { line = '<C-_>'},
-    opleader = { line = '<C-_>'},
-    extra = {
-        eol = '<C-a>', -- at the end of line 
-        above = 'gcO', -- on the line above
-        below = 'gco', -- on the line below
-    },
-}
+-- toggle comment normal or visual mode with : ctrl+/ (two keys no shift on US keyboard)
+vim.keymap.set({'n', 'v'}, '<C-_>', ':call nerdcommenter#Comment(0,"toggle")<CR>')
+--vim.keymap.set('v', '<C-c>', ':call nerdcommenter#Comment(0,"sexy")<CR>')
+-- vim.g.NERDDefaultAlign = 'left'
+vim.g.NERDSpaceDelims= true
+
 
 -- ======
 -- indent_blankline
@@ -364,7 +395,7 @@ cmp.setup.cmdline(':', {
         { name = 'path' },
         { name = 'cmdline' } })
 })
-cmp.setup.cmdline(':e', {
+cmp.setup.cmdline(':e ', {
     mapping = cmpm.preset.cmdline(),
     sources = cmp.config.sources({
         { name = 'path' },
@@ -475,13 +506,25 @@ lspconfig['sumneko_lua'].setup(
     }
 )
 
+--Markdown
+lspconfig.marksman.setup{}
+
+--bash
+require'lspconfig'.bashls.setup{}
+
+
 -- =====
 -- Treesitter
 -- =====
 
 require('nvim-treesitter.configs').setup {
-    ensure_installed = { 'lua', 'python', 'markdown' },
-    highlight = { enable = true },
+    ensure_installed = { 'lua', 'python', 'markdown', 'bash'},
+    highlight = { enable = true ,
+    additional_vim_regex_highlighting = { "python" },
+
+        disable={'markdown'}
+
+    },
     indent = { enable = true },
 }
 
@@ -599,7 +642,7 @@ require("nvim-tree").setup({
 )
 
 -- =====
--- bufferline 
+-- bufferline
 -- =====
 require("bufferline").setup{
     options = {
@@ -619,9 +662,36 @@ augroup highlight_yank
     au TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=700}
 augroup END
 ]]
-    
 -- =====
 -- ack
 -- =====
 vim.cmd[[ let g:ackprg = 'ag --vimgrep' ]]
 
+
+-- =====
+-- Markdown preview
+-- =====
+
+-- just for reference
+
+-- " example
+-- nmap <C-s> <Plug>MarkdownPreview
+-- nmap <M-s> <Plug>MarkdownPreviewStop
+-- nmap <C-p> <Plug>MarkdownPreviewToggle
+--
+vim.g.vim_markdown_folding_disabled = true
+
+vim.g['test#strategy'] = 'neovim'
+-- " in normal mode to keep it open
+-- " set this to false to close on key-press
+vim.g['test#neovim#start_normal'] = true
+
+
+--#region
+-- Unsorted
+--autocmd FileType markdown nmap <buffer><silent> <leader>i :call mdip#MarkdownClipboardImage()<CR>
+--" there are some defaults for image directory and image name, you can change them
+--let g:mdip_imgdir = 'attachments'
+--let g:mdip_imgname = 'image'
+--foo
+--

@@ -1,16 +1,144 @@
-alias ls='ls --color'
+# autocompletion
+# ----
+# bash autocompletion for git/ssh/ etc
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+. /usr/share/bash-completion/bash_completion
+elif [ -f /etc/bash_completion ]; then
+. /etc/bash_completion
+fi
+
+# HISTORY
+# =======
+# don't put duplicate lines or lines starting with space in the history.
+HISTCONTROL=ignoreboth
+# append to the history file, don't overwrite it
+shopt -s histappend
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000000
+HISTFILESIZE=200000
+
+# Better search history
+# up/down does a reverse search
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
+
+# show all results if multiple options available
+bind "set show-all-if-ambiguous on"
+# ignore case in search
+bind "set completion-ignore-case on"
+bind "set completion-map-case on"
+
+# sync all bash sessions
+# Run this every time a command is run:
+# *a*ppend to file, *c*lear local, *r* file
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
+# Vi mode
+#set -o vi
+# if vi mode is used, this gives nice indicators if you are in insert or normal mode
+# bind 'set show-mode-in-prompt on'
+bind 'set vi-cmd-mode-string "\1\e[2 q\2"'
+bind 'set vi-ins-mode-string "\1\e[6 q\2"'
+
+
+# Better Folder movement
+# do not need cd
+shopt -s autocd
+shopt -s dirspell
+shopt -s cdspell
+
+# =========
+# Functions
+# =========
+
+
+# if agent forwarding is used, this can get the key running again
+# especially in tmux
+fixssh() {
+    eval $(tmux show-env    \
+        |sed -n 's/^\(SSH_[^=]*\)=\(.*\)/export \1="\2"/p')
+}
+
+# notes
+# -----
+# this is for quickly writing notes in vim
+note() { nvim ~/notes/"$1.md" ; }
+notel() { less ~/notes/"$1.md" ; }
+_noteComplet() # autocompletion function for the notes
+{ local cur=${COMP_WORDS[COMP_CWORD]}
+	COMPREPLY=( $(compgen -W "$(ls -1 ${HOME}/notes/| sed -e 's/\.md$//')" -- $cur))
+}
+complete -F _noteComplet note 
+
+
+
+export EDITOR=nvim
+
+# =====
+# Prompt
+# =====
+light_blue='\[\033[1;34m\]'
+blue='\[\033[0;34m\]'
+green='\[\033[1;32m\]'
+red='\[\033[1;31m\]'
+color_end='\[\033[0m\]'
+
+git_branch(){ echo "$(git branch 2>/dev/null | grep '^*' | colrm 1 2)" ; }
+function markup_git_branch {
+  if [[ $(git_branch) = '' ]]; then
+  	echo ''
+  else
+    if [[ $(git status|grep 'Changes not staged for commit') ]]; then
+      echo -e '\033[1;31m'"${1}*"'\033[0m'
+    else
+      echo -e "\033[1;36m${1}"
+    fi
+  fi
+}
+#Prompt
+export PROMPT_DIRTRIM=2
+
+export PS1="${green}\u@${green}\h${color_end} \w \$(markup_git_branch \$(git_branch))${blue} \n${blue}\A ▶ ${color_end}"
+
+# =================
+# aliases
+# =================
+
+# edit dotfiles
+alias evim='nvim ~/.config/nvim/init.lua'
+alias ebash='nvim ~/.bashrc'
+alias enice='nvim ~/.bash_nice'
+alias etmux='nvim ~/.tmux.conf'
+alias ei3='nvim ~/.config/i3/config'
+
+# source bash
+alias sb='source ~/.bashrc'
 
 # GIT
 alias gs='git status'
 alias ga='git add '
 alias gd='git diff '
 alias gm='git commit -m '
+alias gl='git log --graph --oneline --decorate --all'
+alias pull='git pull -v'
 
-alias evim='nvim ~/.config/nvim/init.lua'
-alias ebash='nvim ~/.bashrc'
-alias ealias='nvim ~/.alias'
+# make it color
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
 
+alias ll='ls -alFh'
+alias la='ls -A'
+alias l='ls -hCFl'
 
-alias ss='source ~/.bashrc'
+# ask before overriding
+alias mv='mv -i'
+alias cp='cp -i'
 
-echo 'aliases sourced'
+# open with default
+alias open='xdg-open'
+
+# tmux
+# attach or create new session: e.g. ts work
+alias ts='tmux new-session -A -s '
+
+echo 'bash_nice sourced'
