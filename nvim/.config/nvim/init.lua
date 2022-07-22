@@ -658,6 +658,7 @@ augroup highlight_yank
 augroup END
 ]]
 
+vim.cmd [[ command! Q execute ':bwipe!' ]] -- close buffer (unload) and window
 -- =====
 -- ack
 -- =====
