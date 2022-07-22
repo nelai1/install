@@ -429,7 +429,7 @@ local function lsp_keymaps(bufnr)
     keymap_buf(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", options_lsp)
     keymap_buf(bufnr, "n", "<leader>r", "<cmd>lua vim.lsp.buf.rename()<CR>", {desc='Rename'})
     keymap_buf(bufnr, "n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", options_lsp)
-
+    keymap_buf(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", {desc='Format buffer'})
     -- keymap_buf(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", options_lsp)
     -- keymap_buf(bufnr, "n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", options_lsp)
     -- keymap_buf(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", options_lsp)
@@ -658,7 +658,7 @@ augroup highlight_yank
 augroup END
 ]]
 
-vim.cmd [[ command! Q execute ':bwipe!' ]] -- close buffer (unload) and window
+vim.cmd [[ command! Q execute ':bwipe!' ]] -- close buffer (unload) and window, close test terminal
 -- =====
 -- ack
 -- =====
