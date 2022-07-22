@@ -73,6 +73,7 @@ require('packer').startup(function(use)
         tag = "v2.*",
         requires = 'kyazdani42/nvim-web-devicons'}
     use 'mileszs/ack.vim'
+    use "folke/which-key.nvim" -- show me key bindings
 
     -- Treesitter  Highlight, edit, and navigate code
     use { "nvim-treesitter/nvim-treesitter",
@@ -142,6 +143,7 @@ vim.opt.undofile = true    -- Save undo history
 vim.opt.ignorecase = true  -- Case insensitive searching UNLESS /C or capital in search
 vim.opt.smartcase = true
 vim.opt.updatetime = 250   -- Decrease update time
+vim.opt.timeoutlen = 500   -- Decrease update time
 vim.opt.signcolumn = 'yes' -- extra space for symbols next to numbers
 vim.opt.showmatch = true   -- shortly jump to [{( partner on insert
 
@@ -159,6 +161,7 @@ vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.swapfile = false
 vim.opt.cursorline = true
+vim.opt.colorcolumn = '+0,+1,+2' -- indicate text width
 vim.opt.scrolloff = 4      -- keep lines above/below
 vim.opt.sidescrolloff = 4
 
@@ -171,15 +174,17 @@ vim.g.gruvbox_material_foreground = 'material'
 vim.cmd [[colorscheme tokyonight]]
 -- vim.cmd [[colorscheme gruvbox-material]]
 
+vim.opt.textwidth = 88      -- this is used for colorcolumn
 vim.opt.smartindent = true
 vim.opt.tabstop = 4
-vim.opt.softtabstop = 4    --tab counts as this many characters
-vim.opt.shiftwidth = 4     --how much to indent by defaul
+vim.opt.softtabstop = 4     --tab counts as this many characters
+vim.opt.shiftwidth = 4      --how much to indent by defaul
 vim.opt.expandtab = true    -- all tabs are replaces by spaces
 
 -- ===== Filetype
 -- Markdown
 vim.cmd[[ autocmd FileType markdown set conceallevel=2]]
+--autocmd FileType markdown nmap <buffer><silent> <leader>i :call mdip#MarkdownClipboardImage()<CR>
 
 -- ======
 -- Mappings
@@ -546,6 +551,7 @@ telescope.setup {
             i = {
                 ["<C-c>"] = actions.close,
                 ["<leader>c"] = require('telescope.actions').close,
+                ["<esc>"] = require('telescope.actions').close, -- you might want to change this, prevents normal mode
 
                 ["<Down>"] = actions.move_selection_next,
                 ["<Up>"] = actions.move_selection_previous,
@@ -600,7 +606,8 @@ vim.keymap.set('n', '<leader>sw',
 
 -- open rg window
 -- vim.keymap.set('n', '<leader>sg', tb.live_grep, { desc = '[S]earch by [G]rep' })
-vim.keymap.set("n", "<leader>sg", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>", { desc = '[S]earch by [G]rep' })
+vim.keymap.set("n", "<leader>sg",
+    ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>", { desc = '[S]earch by [G]rep' })
 
 
 -- basically minibuf of diagnostics
@@ -656,12 +663,14 @@ require("bufferline").setup{
 }
 
 -- show what you just yanked
+-- ======
 vim.cmd[[
 augroup highlight_yank
     autocmd!
     au TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=700}
 augroup END
 ]]
+
 -- =====
 -- ack
 -- =====
@@ -673,21 +682,33 @@ vim.cmd[[ let g:ackprg = 'ag --vimgrep' ]]
 -- =====
 
 -- just for reference
-
--- " example
 -- nmap <C-s> <Plug>MarkdownPreview
 -- nmap <M-s> <Plug>MarkdownPreviewStop
 -- nmap <C-p> <Plug>MarkdownPreviewToggle
 --
 vim.g.vim_markdown_folding_disabled = true
 
+-- ====
+-- test
+-- ====
 vim.g['test#strategy'] = 'neovim'
--- " in normal mode to keep it open
 -- " set this to false to close on key-press
 vim.g['test#neovim#start_normal'] = true
 
 
+-- ======
+-- whic key
+-- =====
+require('which-key').setup{
+    plugins={
+        spelling = {enabled=true, suggestions=20}, -- z= menue
+    },}
+
 --#region
+-- =============== === === === === === === ===
+-- =============== === === === === === === ===
+-- =============== === === === === === === ===
+-- =============== === === === === === === ===
 -- Unsorted
 --autocmd FileType markdown nmap <buffer><silent> <leader>i :call mdip#MarkdownClipboardImage()<CR>
 --" there are some defaults for image directory and image name, you can change them
