@@ -3,8 +3,9 @@
 --
 -- Requirements:
 -- for opensuse:
--- `zypper in -t pattern build_basis`
--- `zypper in npm`
+-- `zypper in -t pattern build_basis` -- for Treesitter
+-- `zypper in npm`                    -- for lsp
+-- ag-silversearcher                  -- for Ack
 --
 --  Index
 --  Packages
@@ -14,6 +15,10 @@
 --  LSP
 
         -- border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+--
+-- Today I learned:
+-- Delete till excluding LETTER: dtLETTER
+-- Delete till including LETTER (mnemonic: find): dfLETTER
 -- =====
 -- Packages
 -- =====
@@ -31,7 +36,6 @@ if not packer_is_there then
     end
     -- vim.o.runtimepath = vim.fn.stdpath('data') .. '/site/pack/*/start/*,' .. vim.o.runtimepath
     vim.cmd 'packadd packer.nvim'
-    local _, packer = pcall(require, "packer")
 else
     -- Have packer use a popup window
     packer.init { display = { open_fn = function() return require("packer.util").float { border = "rounded" } end, }, }
@@ -45,35 +49,34 @@ require('packer').startup(function(use)
     use 'kyazdani42/nvim-web-devicons' -- optional, for file icons
 
     -- colors
+    -- ======
     use 'cocopon/iceberg.vim'
-    use 'mjlbach/onedark.nvim'
     use "lunarvim/darkplus.nvim"
     use "sainnhe/gruvbox-material"
-    use "arcticicestudio/nord-vim"
     use "sainnhe/sonokai"
     use "sainnhe/everforest"
     use "catppuccin/nvim"
-    use "kyazdani42/blue-moon"
     use "folke/tokyonight.nvim"
-    use "andersevenrud/nordic.nvim"
     use "rebelot/kanagawa.nvim"
 
-    use 'tpope/vim-fugitive'        -- Git commands in nvim
-    use 'tpope/vim-rhubarb'         -- Fugitive-companion to interact with github
-    use 'lewis6991/gitsigns.nvim'   -- Add git related info in the signs columns and popups
-    use { 'TimUntersberger/neogit', requires = 'nvim-lua/plenary.nvim' }
-    use 'sindrets/diffview.nvim'    -- companion for neogit
+    use 'tpope/vim-fugitive'           -- Git commands in nvim
+    use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
+    use 'lewis6991/gitsigns.nvim'      -- Add git related info in the signs columns and popups
+    use 'TimUntersberger/neogit'       -- use <tab> and see if you like it
+    use 'sindrets/diffview.nvim'       -- companion for neogit
 
     -- quality of life
-    use "machakann/vim-sandwich"              -- modify {}, (), etc
-    use 'preservim/nerdcommenter'             -- easy commenting
-    use 'lukas-reineke/indent-blankline.nvim' -- Add indentation guides even on blank lines
-    use 'kyazdani42/nvim-tree.lua'            -- tree file browsers
-    use {'akinsho/bufferline.nvim',           -- show tabs at top
+    use "machakann/vim-sandwich"       -- modify {}, (), etc
+    use 'famiu/bufdelete.nvim'         -- just fixes buffer delete - keep window open
+    use 'preservim/nerdcommenter'      -- easy commenting
+    use ('lukas-reineke/' ..
+        'indent-blankline.nvim')       -- Add indentation guides even on blank lines
+    use 'kyazdani42/nvim-tree.lua'     -- tree file browsers
+    use {'akinsho/bufferline.nvim',    -- show tabs at top
         tag = "v2.*",
         requires = 'kyazdani42/nvim-web-devicons'}
     use 'mileszs/ack.vim'
-    use "folke/which-key.nvim" -- show me key bindings
+    use "folke/which-key.nvim"         -- show me key bindings
 
     -- Treesitter  Highlight, edit, and navigate code
     use { "nvim-treesitter/nvim-treesitter",
@@ -87,14 +90,13 @@ require('packer').startup(function(use)
     use "hrsh7th/cmp-cmdline"             -- cmdline completions
     use "hrsh7th/cmp-nvim-lsp"            -- language server completion
     use "hrsh7th/cmp-nvim-lua"            -- internal nvim-lua completion
-    use "saadparwaiz1/cmp_luasnip"        -- snippet completions
 
     use "L3MON4D3/LuaSnip"                -- needed for cmp snippet engine
-    use "rafamadriz/friendly-snippets"    -- a bunch of snippets to use
 
     -- LSP - language server protocol
     use 'neovim/nvim-lspconfig'           -- base plugin
     use 'williamboman/nvim-lsp-installer' -- Automatically/easy install language servers to stdpath
+    use'jose-elias-alvarez/null-ls.nvim'
 
     -- Telescope
     use {"nvim-telescope/telescope.nvim",
@@ -171,7 +173,8 @@ vim.g.tokyonight_style = 'night'
 vim.g.gruvbox_material_background = 'hard'
 vim.g.gruvbox_material_diagnostic_text_highlight = 0
 vim.g.gruvbox_material_foreground = 'material'
-vim.cmd [[colorscheme tokyonight]]
+
+vim.cmd [[colorscheme kanagawa]]
 -- vim.cmd [[colorscheme gruvbox-material]]
 
 vim.opt.textwidth = 88      -- this is used for colorcolumn
@@ -218,10 +221,11 @@ keymap("n", "<C-Left>", ":vertical resize -2<CR>", opts)
 keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 
 -- Navigate buffers
-keymap("n", "<leader>n", ":bnext<CR>", opts)
-keymap("n", "<leader>p", ":bprevious<CR>", opts)
-vim.keymap.set('n', '<leader>v', ':<C-u>vsplit<CR>')
-vim.keymap.set('n', '<leader>h', ':<C-u>hsplit<CR>')
+keymap("n", "<leader>n", ":bnext<CR>",              {desc='next buffer'})
+keymap("n", "<leader>p", ":bprevious<CR>",          {desc='prev buffer'})
+vim.keymap.set('n', '<leader>v', ':vsplit<CR>',{desc='vsplit'} )
+vim.keymap.set('n', '<leader>h', ':split<CR>',{desc='hsplit'} )
+vim.keymap.set('n', '<leader>q', ':Bdelete<CR>',{desc='hsplit'} )
 
 -- Press jk fast to enter
 keymap("i", "jk", "<ESC>", opts)
@@ -239,21 +243,26 @@ keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", term_opts)
 keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev)
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, {desc='diagnostic next'})
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, {desc='diagnostic next'})
+vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next, {desc='diagnostic next'})
+vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev, {desc='diagnostic prev issue'})
+vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist,{desc='diagnostic list'} )
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist)
 
 -- special
 --
 -- remove all leading and trailing whitespace: I love it
-vim.keymap.set('n', '<leader>w', ':%s/\\s\\+$//<cr>:let @/=""<CR>')
+vim.keymap.set('n', '<leader>w', ':%s/\\s\\+$//<cr>:let @/=""<CR>', {desc='Clear line end space'})
+-- way better * behaviour !!
+-- yank word under cursor, do not jump
+vim.keymap.set('n', '*','"syiw<Esc>: let @/ = @s<CR>')
+-- "s              - select register s
+-- yiw             - yank inner word
+-- <Esc>:          - switch to command mode
+-- let @/ = @s<CR> - set search register / with the content of register s
 
 
---noremap <leader>q :BD<CR>
---
 -- ============
 -- Plugins
 -- ============
@@ -261,11 +270,14 @@ vim.keymap.set('n', '<leader>w', ':%s/\\s\\+$//<cr>:let @/=""<CR>')
 -- -----
 -- Comment
 -- -----
--- toggle comment normal or visual mode with : ctrl+/ (two keys no shift on US keyboard)
+-- toggle comment normal or visual mode with:
+-- ctrl+/ (two keys no shift on US keyboard)
 vim.keymap.set({'n', 'v'}, '<C-_>', ':call nerdcommenter#Comment(0,"toggle")<CR>')
---vim.keymap.set('v', '<C-c>', ':call nerdcommenter#Comment(0,"sexy")<CR>')
+vim.g.NERDSpaceDelims= true  -- add space after comment symbol
+vim.g.NERDCreateDefaultMappings = false
+
 -- vim.g.NERDDefaultAlign = 'left'
-vim.g.NERDSpaceDelims= true
+--vim.keymap.set('v', '<C-c>', ':call nerdcommenter#Comment(0,"sexy")<CR>')
 
 
 -- ======
@@ -286,14 +298,6 @@ require('gitsigns').setup {}
 -- CMP
 -- ======
 local  cmp  = require "cmp"
-local luasnip = require "luasnip"
-require("luasnip/loaders/from_vscode").lazy_load()
-
--- TODO chekc what it does
-local check_backspace = function()
-    local col = vim.fn.col "." - 1
-    return col == 0 or vim.fn.getline("."):sub(col, col):match "%s"
-end
 
 --   פּ ﯟ   some other good icons
 local kind_icons = {
@@ -327,12 +331,10 @@ local kind_icons = {
 local cmpm = cmp.mapping
 
 cmp.setup {
-    snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
     window = { documentation = cmp.config.window.bordered() },
     sources = {
         { name = "nvim_lsp" },
         { name = "nvim_lua" },
-        { name = "luasnip" },
         { name = "buffer" },
         { name = "path" },
     },
@@ -343,36 +345,8 @@ cmp.setup {
         ["<C-e>"] = cmpm { i = cmpm.abort(), c = cmpm.close() },
         ["<C-c>"] = cmpm { i = cmpm.abort(), c = cmpm.close() },
         ["<CR>"] = cmp.mapping.confirm { select = true },
-
-        -- deals with snippets and completion
-        -- do correct thing on button press depending on
-        -- state. Example:
-        -- select_item from suggestion or jump to next snippet tag
-         ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i','c'}),
-['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i','c'}),
-        -- ["<C-n>"] = cmpm(function(fallback)
-        --     if cmp.visible() then
-        --         cmp.select_next_item()
-        --     elseif luasnip.expandable() then
-        --         luasnip.expand()
-        --     elseif luasnip.expand_or_jumpable() then
-        --         luasnip.expand_or_jump()
-        --     elseif check_backspace() then
-        --         fallback()
-        --     else
-        --         fallback()
-        --     end
-        -- end, { "i", "s", 'c'}),
-        --
-        -- ["<C-p>"] = cmp.mapping(function(fallback)
-        --     if cmp.visible() then
-        --         cmp.select_prev_item()
-        --     elseif luasnip.jumpable(-1) then
-        --         luasnip.jump(-1)
-        --     else
-        --         fallback()
-        --     end
-        -- end, { "i", "s", 'c'}),
+        ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i','c'}),
+        ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i','c'}),
     },
     -- how the completion menu looks (can be removed)
     formatting = {
@@ -389,22 +363,12 @@ cmp.setup {
             return vim_item
         end,
     },
-    -- confirm_opts = {
-    --   behavior = cmp.ConfirmBehavior.Replace,
-    --   select = false,
-    -- },
 }
 cmp.setup.cmdline(':', {
     mapping = cmpm.preset.cmdline(),
     sources = cmp.config.sources({
         { name = 'path' },
         { name = 'cmdline' } })
-})
-cmp.setup.cmdline(':e ', {
-    mapping = cmpm.preset.cmdline(),
-    sources = cmp.config.sources({
-        { name = 'path' },
-    })
 })
 
 cmp.setup.cmdline('/', {
@@ -429,7 +393,7 @@ for _, sign in ipairs(signs_diagnostic) do
 end
 vim.diagnostic.config({
     virtual_text = false,
-    -- signs = { active = signs_diagnostic },
+    signs = { active = signs_diagnostic },
     update_in_insert = true,
     underline = true,
     severity_sort = false,
@@ -463,7 +427,7 @@ local function lsp_keymaps(bufnr)
     local options_lsp = { noremap = true, silent = true }
     keymap_buf(bufnr, "n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", options_lsp)
     keymap_buf(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", options_lsp)
-    keymap_buf(bufnr, "n", "<leader>r", "<cmd>lua vim.lsp.buf.rename()<CR>", options_lsp)
+    keymap_buf(bufnr, "n", "<leader>r", "<cmd>lua vim.lsp.buf.rename()<CR>", {desc='Rename'})
     keymap_buf(bufnr, "n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", options_lsp)
 
     -- keymap_buf(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", options_lsp)
@@ -552,6 +516,7 @@ telescope.setup {
                 ["<C-c>"] = actions.close,
                 ["<leader>c"] = require('telescope.actions').close,
                 ["<esc>"] = require('telescope.actions').close, -- you might want to change this, prevents normal mode
+                ["<leader><leader>"] = require('telescope.actions').close, -- you might want to change this, prevents normal mode
 
                 ["<Down>"] = actions.move_selection_next,
                 ["<Up>"] = actions.move_selection_previous,
@@ -701,8 +666,20 @@ vim.g['test#neovim#start_normal'] = true
 -- =====
 require('which-key').setup{
     plugins={
-        spelling = {enabled=true, suggestions=20}, -- z= menue
-    },}
+        spelling = {enabled=true, suggestions=20}, -- z= menu
+    },
+}
+require'which-key'.register({
+    ["<leader>s"]={name='search'},
+    ["<leader>d"]={name='diagnostic'},
+    ["s"]={name='surround'},
+})
+
+-- ====
+-- Neogit
+-- ====
+require'neogit'.setup{integration = {diffview=true}}
+
 
 --#region
 -- =============== === === === === === === ===
