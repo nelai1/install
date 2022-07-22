@@ -96,6 +96,8 @@ require('packer').startup(function(use)
     -- LSP - language server protocol
     use 'neovim/nvim-lspconfig'           -- base plugin
     use 'williamboman/nvim-lsp-installer' -- Automatically/easy install language servers to stdpath
+    -- additional ls dummy for shell scripts like:
+    -- flake8/black/shellcheck/isort/ ...
     use'jose-elias-alvarez/null-ls.nvim'
 
     -- Telescope
@@ -273,7 +275,7 @@ vim.keymap.set('n', '*','"syiw<Esc>: let @/ = @s<CR>')
 -- toggle comment normal or visual mode with:
 -- ctrl+/ (two keys no shift on US keyboard)
 vim.keymap.set({'n', 'v'}, '<C-_>', ':call nerdcommenter#Comment(0,"toggle")<CR>')
-vim.g.NERDSpaceDelims= true  -- add space after comment symbol
+vim.g.NERDSpaceDelims = true  -- add space after comment symbol
 vim.g.NERDCreateDefaultMappings = false
 
 -- vim.g.NERDDefaultAlign = 'left'
@@ -284,9 +286,7 @@ vim.g.NERDCreateDefaultMappings = false
 -- indent_blankline
 -- ======
 -- Show very nice lines for indentation level
-require('indent_blankline').setup {
-    indent_blankline_enabled = false,
-}
+require('indent_blankline').setup { indent_blankline_enabled = false, }
 keymap('n', '<leader>i', ':IndentBlanklineToggle<CR>', opts)
 
 -- ======
@@ -481,7 +481,29 @@ lspconfig.marksman.setup{}
 --bash
 require'lspconfig'.bashls.setup{}
 
+-- =====
+-- NULL-LS
+-- =====
+local nullls = require('null-ls')
+-- see: https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
+local formatting = nullls.builtins.formatting
+-- see: https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
+local diagnostics = nullls.builtins.diagnostics
 
+nullls.setup({sources = {
+    -- python
+    formatting.black,
+    formatting.isort,
+    diagnostics.flake8,
+
+    -- shell
+    formatting.shfmt,
+    diagnostics.shellcheck,
+
+    -- markdown
+    diagnostics.markdownlint,
+
+}})
 -- =====
 -- Treesitter
 -- =====
