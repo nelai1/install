@@ -62,8 +62,6 @@ require('packer').startup(function(use)
     use 'tpope/vim-fugitive'           -- Git commands in nvim
     use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
     use 'lewis6991/gitsigns.nvim'      -- Add git related info in the signs columns and popups
-    use 'TimUntersberger/neogit'       -- use <tab> and see if you like it
-    use 'sindrets/diffview.nvim'       -- companion for neogit
 
     -- quality of life
     use "machakann/vim-sandwich"       -- modify {}, (), etc
@@ -428,7 +426,7 @@ local function lsp_keymaps(bufnr)
     keymap_buf(bufnr, "n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", options_lsp)
     keymap_buf(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", options_lsp)
     keymap_buf(bufnr, "n", "<leader>r", "<cmd>lua vim.lsp.buf.rename()<CR>", {desc='Rename'})
-    keymap_buf(bufnr, "n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", options_lsp)
+    keymap_buf(bufnr, "i", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", options_lsp)
     keymap_buf(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", {desc='Format buffer'})
     -- keymap_buf(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", options_lsp)
     -- keymap_buf(bufnr, "n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", options_lsp)
@@ -476,10 +474,10 @@ lspconfig['sumneko_lua'].setup(
 )
 
 --Markdown
-lspconfig.marksman.setup{}
+lspconfig['marksman'].setup{}
 
 --bash
-require'lspconfig'.bashls.setup{}
+lspconfig['bashls'].setup{}
 
 -- =====
 -- NULL-LS
@@ -640,12 +638,11 @@ require("nvim-tree").setup({
 -- =====
 require("bufferline").setup{
     options = {
+        themable = true, -- whether or not the highlights for this plugin can be overriden.
         show_close_icon = false,
-        show_buffer_close_icon = false,
-        buffer_close_icon= "",
-        diagnostics = "false",
-        show_tab_indicators =  false,
-        themable = true -- whether or not the highlights for this plugin can be overriden.
+        show_buffer_close_icons = false,
+        diagnostics = true,
+        offsets = {{filetype = "NvimTree"}},
     }
 }
 
@@ -659,6 +656,7 @@ augroup END
 ]]
 
 vim.cmd [[ command! Q execute ':bwipe!' ]] -- close buffer (unload) and window, close test terminal
+
 -- =====
 -- ack
 -- =====
@@ -681,7 +679,7 @@ vim.g.vim_markdown_folding_disabled = true
 -- ====
 vim.g['test#strategy'] = 'neovim'
 -- " set this to false to close on key-press
-vim.g['test#neovim#start_normal'] = true
+-- vim.g['test#neovim#start_normal'] = true
 
 
 -- ======
@@ -697,11 +695,6 @@ require'which-key'.register({
     ["<leader>d"]={name='diagnostic'},
     ["s"]={name='surround'},
 })
-
--- ====
--- Neogit
--- ====
-require'neogit'.setup{integration = {diffview=true}}
 
 
 --#region
