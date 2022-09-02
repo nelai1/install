@@ -14,7 +14,7 @@
 --  CMP
 --  LSP
 
-        -- border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+-- border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
 --
 -- Today I learned:
 -- Delete till excluding LETTER: dtLETTER
@@ -43,9 +43,9 @@ end
 
 
 require('packer').startup(function(use)
-    use('wbthomason/packer.nvim')      -- Packer can manage itself
-    use "nvim-lua/popup.nvim"          -- An implementation of the Popup API from vim in Neovim
-    use "nvim-lua/plenary.nvim"        -- Useful lua functions used ny lots of plugins
+    use('wbthomason/packer.nvim') -- Packer can manage itself
+    use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
+    use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
     use 'kyazdani42/nvim-web-devicons' -- optional, for file icons
 
     -- colors
@@ -59,22 +59,22 @@ require('packer').startup(function(use)
     use "folke/tokyonight.nvim"
     use "rebelot/kanagawa.nvim"
 
-    use 'tpope/vim-fugitive'           -- Git commands in nvim
-    use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
-    use 'lewis6991/gitsigns.nvim'      -- Add git related info in the signs columns and popups
+    use 'tpope/vim-fugitive' -- Git commands in nvim
+    use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
+    use 'lewis6991/gitsigns.nvim' -- Add git related info in the signs columns and popups
 
     -- quality of life
-    use "machakann/vim-sandwich"       -- modify {}, (), etc
-    use 'famiu/bufdelete.nvim'         -- just fixes buffer delete - keep window open
-    use 'preservim/nerdcommenter'      -- easy commenting
-    use ('lukas-reineke/' ..
-        'indent-blankline.nvim')       -- Add indentation guides even on blank lines
-    use 'kyazdani42/nvim-tree.lua'     -- tree file browsers
-    use {'akinsho/bufferline.nvim',    -- show tabs at top
+    use "machakann/vim-sandwich" -- modify {}, (), etc
+    use 'famiu/bufdelete.nvim' -- just fixes buffer delete - keep window open
+    use 'preservim/nerdcommenter' -- easy commenting
+    use('lukas-reineke/' ..
+        'indent-blankline.nvim') -- Add indentation guides even on blank lines
+    use 'kyazdani42/nvim-tree.lua' -- tree file browsers
+    use { 'akinsho/bufferline.nvim', -- show tabs at top
         tag = "v2.*",
-        requires = 'kyazdani42/nvim-web-devicons'}
+        requires = 'kyazdani42/nvim-web-devicons' }
     use 'mileszs/ack.vim'
-    use "folke/which-key.nvim"         -- show me key bindings
+    use "folke/which-key.nvim" -- show me key bindings
 
     -- Treesitter  Highlight, edit, and navigate code
     use { "nvim-treesitter/nvim-treesitter",
@@ -82,24 +82,25 @@ require('packer').startup(function(use)
     use 'nvim-treesitter/nvim-treesitter-textobjects' --  Additional textobjects for treesitter
 
     -- Autocompletion
-    use 'hrsh7th/nvim-cmp'                -- base plugin
-    use "hrsh7th/cmp-buffer"              -- buffer completions
-    use "hrsh7th/cmp-path"                -- path completions
-    use "hrsh7th/cmp-cmdline"             -- cmdline completions
-    use "hrsh7th/cmp-nvim-lsp"            -- language server completion
-    use "hrsh7th/cmp-nvim-lua"            -- internal nvim-lua completion
+    use 'hrsh7th/nvim-cmp' -- base plugin
+    use "hrsh7th/cmp-buffer" -- buffer completions
+    use "hrsh7th/cmp-path" -- path completions
+    use "hrsh7th/cmp-cmdline" -- cmdline completions
+    use "hrsh7th/cmp-nvim-lsp" -- language server completion
+    use "hrsh7th/cmp-nvim-lua" -- internal nvim-lua completion
 
-    use "L3MON4D3/LuaSnip"                -- needed for cmp snippet engine
+    use "L3MON4D3/LuaSnip" -- needed for cmp snippet engine
+    use "ray-x/lsp_signature.nvim" -- show signature while typoing
 
     -- LSP - language server protocol
-    use 'neovim/nvim-lspconfig'           -- base plugin
-    use 'williamboman/nvim-lsp-installer' -- Automatically/easy install language servers to stdpath
-    -- additional ls dummy for shell scripts like:
-    -- flake8/black/shellcheck/isort/ ...
-    use'jose-elias-alvarez/null-ls.nvim'
+    use 'williamboman/mason.nvim' -- Automatically/easy install language servers to stdpath
+    use 'williamboman/mason-lspconfig.nvim'
+    use 'neovim/nvim-lspconfig' -- base plugin
+    use 'jose-elias-alvarez/null-ls.nvim'
+    -- use('MunifTanjim/prettier.nvim')
 
     -- Telescope
-    use {"nvim-telescope/telescope.nvim",
+    use { "nvim-telescope/telescope.nvim",
         requires = { { "nvim-telescope/telescope-live-grep-args.nvim" }, },
         config = function() require("telescope").load_extension("live_grep_args") end
     }
@@ -110,7 +111,7 @@ require('packer').startup(function(use)
     -- Language specific
     -- ====
     -- MARKDOWN
-    use{ "iamcco/markdown-preview.nvim", -- Preview markdown ...
+    use { "iamcco/markdown-preview.nvim", -- Preview markdown ...
         run = function() vim.fn["mkdp#util#install"]() end,
     }
     use 'godlygeek/tabular'
@@ -118,6 +119,11 @@ require('packer').startup(function(use)
     use 'ferrine/md-img-paste.vim'
 
     use 'vim-test/vim-test'
+
+    use {
+  'nvim-lualine/lualine.nvim',
+  requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+}
 
     if not packer_is_there then
         require('packer').sync()
@@ -135,40 +141,41 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 -- =====
 -- options
 -- =====
-vim.opt.hlsearch = true    -- Set highlight on search
+vim.opt.hlsearch = true -- Set highlight on search
 --vim.opt.clipboard = "unnamedplus" -- allows neovim to access the system clipboard
 vim.opt.number = true
 vim.opt.relativenumber = false
-vim.opt.mouse = 'a'        -- Enable mouse mode
+vim.opt.mouse = 'a' -- Enable mouse mode
 vim.opt.breakindent = true -- wrapped lines will have same indentation
-vim.opt.undofile = true    -- Save undo history
-vim.opt.ignorecase = true  -- Case insensitive searching UNLESS /C or capital in search
+vim.opt.undofile = true -- Save undo history
+vim.opt.ignorecase = true -- Case insensitive searching UNLESS /C or capital in search
 vim.opt.smartcase = true
-vim.opt.updatetime = 250   -- Decrease update time
-vim.opt.timeoutlen = 500   -- Decrease update time
+vim.opt.updatetime = 250 -- Decrease update time
+vim.opt.timeoutlen = 500 -- Decrease update time
 vim.opt.signcolumn = 'yes' -- extra space for symbols next to numbers
-vim.opt.showmatch = true   -- shortly jump to [{( partner on insert
+vim.opt.showmatch = true -- shortly jump to [{( partner on insert
 
 --vim.opt.completeopt = 'menu,menuone,noselect' -- Set completeopt to have a better completion experience
 vim.opt.completeopt = 'menuone,longest' -- Set completeopt to have a better completion experience
-vim.opt.cmdheight = 2      -- more space in command line
-vim.opt.wildmode='longest:full,full'
+vim.opt.cmdheight = 2 -- more space in command line
+vim.opt.wildmode = 'longest:full,full'
 
 --vim.opt.fileencoding = "utf-8"
 
-vim.opt.pumheight = 15     -- pop up menu height
-vim.opt.showmode = false   -- show stuff like INSERT
+vim.opt.pumheight = 15 -- pop up menu height
+vim.opt.showmode = false -- show stuff like INSERT
 vim.opt.showtabline = 2
 vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.swapfile = false
 vim.opt.cursorline = true
-vim.opt.colorcolumn = '+0,+1,+2' -- indicate text width
-vim.opt.scrolloff = 4      -- keep lines above/below
+vim.opt.colorcolumn = '88,89,90' -- indicate text width
+vim.opt.scrolloff = 4 -- keep lines above/below
 vim.opt.sidescrolloff = 4
 
 vim.opt.termguicolors = true
 vim.opt.winblend = 15 -- pseudo transperancy: 0 nothing - 100 transparaent
+
 vim.g.tokyonight_style = 'night'
 vim.g.gruvbox_material_background = 'hard'
 vim.g.gruvbox_material_diagnostic_text_highlight = 0
@@ -177,16 +184,15 @@ vim.g.gruvbox_material_foreground = 'material'
 vim.cmd [[colorscheme kanagawa]]
 -- vim.cmd [[colorscheme gruvbox-material]]
 
-vim.opt.textwidth = 88      -- this is used for colorcolumn
 vim.opt.smartindent = true
 vim.opt.tabstop = 4
-vim.opt.softtabstop = 4     --tab counts as this many characters
-vim.opt.shiftwidth = 4      --how much to indent by defaul
-vim.opt.expandtab = true    -- all tabs are replaces by spaces
+vim.opt.softtabstop = 4 --tab counts as this many characters
+vim.opt.shiftwidth = 4 --how much to indent by defaul
+vim.opt.expandtab = true -- all tabs are replaces by spaces
 
 -- ===== Filetype
 -- Markdown
-vim.cmd[[ autocmd FileType markdown set conceallevel=2]]
+vim.cmd [[ autocmd FileType markdown set conceallevel=2]]
 --autocmd FileType markdown nmap <buffer><silent> <leader>i :call mdip#MarkdownClipboardImage()<CR>
 
 -- ======
@@ -221,11 +227,11 @@ keymap("n", "<C-Left>", ":vertical resize -2<CR>", opts)
 keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 
 -- Navigate buffers
-keymap("n", "<leader>n", ":bnext<CR>",              {desc='next buffer'})
-keymap("n", "<leader>p", ":bprevious<CR>",          {desc='prev buffer'})
-vim.keymap.set('n', '<leader>v', ':vsplit<CR>',{desc='vsplit'} )
-vim.keymap.set('n', '<leader>h', ':split<CR>',{desc='hsplit'} )
-vim.keymap.set('n', '<leader>q', ':Bdelete<CR>',{desc='hsplit'} )
+keymap("n", "<leader>n", ":bnext<CR>", { desc = 'next buffer' })
+keymap("n", "<leader>p", ":bprevious<CR>", { desc = 'prev buffer' })
+vim.keymap.set('n', '<leader>v', ':vsplit<CR>', { desc = 'vsplit' })
+vim.keymap.set('n', '<leader>h', ':split<CR>', { desc = 'hsplit' })
+vim.keymap.set('n', '<leader>q', ':Bdelete<CR>', { desc = 'hsplit' })
 
 -- Press jk fast to enter
 keymap("i", "jk", "<ESC>", opts)
@@ -243,20 +249,20 @@ keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", term_opts)
 keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, {desc='diagnostic next'})
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, {desc='diagnostic next'})
-vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next, {desc='diagnostic next'})
-vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev, {desc='diagnostic prev issue'})
-vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist,{desc='diagnostic list'} )
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'diagnostic next' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'diagnostic next' })
+vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next, { desc = 'diagnostic next' })
+vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev, { desc = 'diagnostic prev issue' })
+vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist, { desc = 'diagnostic list' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 
 -- special
 --
 -- remove all leading and trailing whitespace: I love it
-vim.keymap.set('n', '<leader>w', ':%s/\\s\\+$//<cr>:let @/=""<CR>', {desc='Clear line end space'})
+vim.keymap.set('n', '<leader>w', ':%s/\\s\\+$//<cr>:let @/=""<CR>', { desc = 'Clear line end space' })
 -- way better * behaviour !!
 -- yank word under cursor, do not jump
-vim.keymap.set('n', '*','"syiw<Esc>: let @/ = @s<CR>')
+vim.keymap.set('n', '*', '"syiw<Esc>: let @/ = @s<CR>')
 -- "s              - select register s
 -- yiw             - yank inner word
 -- <Esc>:          - switch to command mode
@@ -272,8 +278,8 @@ vim.keymap.set('n', '*','"syiw<Esc>: let @/ = @s<CR>')
 -- -----
 -- toggle comment normal or visual mode with:
 -- ctrl+/ (two keys no shift on US keyboard)
-vim.keymap.set({'n', 'v'}, '<C-_>', ':call nerdcommenter#Comment(0,"toggle")<CR>')
-vim.g.NERDSpaceDelims = true  -- add space after comment symbol
+vim.keymap.set({ 'n', 'v' }, '<C-_>', ':call nerdcommenter#Comment(0,"toggle")<CR>')
+vim.g.NERDSpaceDelims = true -- add space after comment symbol
 vim.g.NERDCreateDefaultMappings = false
 
 -- vim.g.NERDDefaultAlign = 'left'
@@ -295,7 +301,7 @@ require('gitsigns').setup {}
 -- ======
 -- CMP
 -- ======
-local  cmp  = require "cmp"
+local cmp = require "cmp"
 
 --   פּ ﯟ   some other good icons
 local kind_icons = {
@@ -343,8 +349,8 @@ cmp.setup {
         ["<C-e>"] = cmpm { i = cmpm.abort(), c = cmpm.close() },
         ["<C-c>"] = cmpm { i = cmpm.abort(), c = cmpm.close() },
         ["<CR>"] = cmp.mapping.confirm { select = true },
-        ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i','c'}),
-        ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i','c'}),
+        ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 'c' }),
+        ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 'c' }),
     },
     -- how the completion menu looks (can be removed)
     formatting = {
@@ -377,8 +383,11 @@ cmp.setup.cmdline('/', {
 -- =====
 -- LSP
 -- =====
+require("mason").setup()
+require("mason-lspconfig").setup({
+        automatic_installation = true,
+})
 local lspconfig = require("lspconfig")
-require("nvim-lsp-installer").setup{automatic_installation = true}
 
 local signs_diagnostic = {
     { name = "DiagnosticSignError", text = "" },
@@ -425,12 +434,12 @@ local function lsp_keymaps(bufnr)
     local options_lsp = { noremap = true, silent = true }
     keymap_buf(bufnr, "n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", options_lsp)
     keymap_buf(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", options_lsp)
-    keymap_buf(bufnr, "n", "<leader>r", "<cmd>lua vim.lsp.buf.rename()<CR>", {desc='Rename'})
+    keymap_buf(bufnr, "n", "<leader>r", "<cmd>lua vim.lsp.buf.rename()<CR>", { desc = 'Rename' })
     keymap_buf(bufnr, "i", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", options_lsp)
-    keymap_buf(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", {desc='Format buffer'})
+    keymap_buf(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", { desc = 'Format buffer' })
     -- keymap_buf(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", options_lsp)
     -- keymap_buf(bufnr, "n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", options_lsp)
-    -- keymap_buf(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", options_lsp)
+    keymap_buf(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", options_lsp)
     -- keymap_buf(bufnr, "n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", options_lsp)
     -- defines command: Format
     vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
@@ -442,6 +451,12 @@ local on_attach = function(client, bufnr)
     end
     lsp_keymaps(bufnr)
     lsp_highlight_document(client)
+    require "lsp_signature".on_attach({
+      bind = true, -- This is mandatory, otherwise border config won't get registered.
+        hint_enable=false,
+      handler_opts = {
+        border = "rounded"
+      }}, bufnr)
 end
 
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -472,26 +487,52 @@ lspconfig['sumneko_lua'].setup(
         },
     }
 )
+lspconfig['html'].setup(
+    {
+        on_attach = on_attach,
+        capabilities = capabilities,
+    }
+)
+lspconfig['eslint'].setup(
+    {
+        on_attach = on_attach,
+        capabilities = capabilities,
+    }
+)
+
 
 --Markdown
-lspconfig['marksman'].setup{}
+lspconfig['marksman'].setup(
+    {
+        on_attach = on_attach,
+        capabilities = capabilities,
+    }
+)
 
 --bash
-lspconfig['bashls'].setup{}
+lspconfig['bashls'].setup(
+    {
+        on_attach = on_attach,
+        capabilities = capabilities,
+    }
+)
 
 -- =====
 -- NULL-LS
 -- =====
 local nullls = require('null-ls')
+-- local prettier = require("prettier")
 -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
 local formatting = nullls.builtins.formatting
 -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
 local diagnostics = nullls.builtins.diagnostics
 
-nullls.setup({sources = {
-    -- python
+nullls.setup({ sources = {
+    -- pyhhon
     formatting.black,
     formatting.isort,
+    formatting.prettier,
+    diagnostics.pylint,
     diagnostics.flake8,
 
     -- shell
@@ -499,20 +540,18 @@ nullls.setup({sources = {
     diagnostics.shellcheck,
 
     -- markdown
-    diagnostics.markdownlint,
+    -- diagnostics.mdl,
 
-}})
+} })
 -- =====
 -- Treesitter
 -- =====
 
 require('nvim-treesitter.configs').setup {
-    ensure_installed = { 'lua', 'python', 'markdown', 'bash'},
-    highlight = { enable = true ,
-    additional_vim_regex_highlighting = { "python" },
-
-        disable={'markdown'}
-
+    ensure_installed = { 'lua', 'python', 'markdown', 'bash', 'html', 'javascript' },
+    highlight = { enable = true,
+        -- additional_vim_regex_highlighting = { "python" },
+        disable = { 'markdown' }
     },
     indent = { enable = true },
 }
@@ -636,19 +675,19 @@ require("nvim-tree").setup({
 -- =====
 -- bufferline
 -- =====
-require("bufferline").setup{
+require("bufferline").setup {
     options = {
         themable = true, -- whether or not the highlights for this plugin can be overriden.
         show_close_icon = false,
         show_buffer_close_icons = false,
         diagnostics = true,
-        offsets = {{filetype = "NvimTree"}},
+        offsets = { { filetype = "NvimTree" } },
     }
 }
 
 -- show what you just yanked
 -- ======
-vim.cmd[[
+vim.cmd [[
 augroup highlight_yank
     autocmd!
     au TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=700}
@@ -660,7 +699,7 @@ vim.cmd [[ command! Q execute ':bwipe!' ]] -- close buffer (unload) and window, 
 -- =====
 -- ack
 -- =====
-vim.cmd[[ let g:ackprg = 'ag --vimgrep' ]]
+vim.cmd [[ let g:ackprg = 'ag --vimgrep' ]]
 
 
 -- =====
@@ -685,15 +724,15 @@ vim.g['test#strategy'] = 'neovim'
 -- ======
 -- whic key
 -- =====
-require('which-key').setup{
-    plugins={
-        spelling = {enabled=true, suggestions=20}, -- z= menu
+require('which-key').setup {
+    plugins = {
+        spelling = { enabled = true, suggestions = 20 }, -- z= menu
     },
 }
-require'which-key'.register({
-    ["<leader>s"]={name='search'},
-    ["<leader>d"]={name='diagnostic'},
-    ["s"]={name='surround'},
+require 'which-key'.register({
+    ["<leader>s"] = { name = 'search' },
+    ["<leader>d"] = { name = 'diagnostic' },
+    ["s"] = { name = 'surround' },
 })
 
 
@@ -709,3 +748,7 @@ require'which-key'.register({
 --let g:mdip_imgname = 'image'
 --foo
 --
+
+-- feline
+-- ===
+require('lualine').setup()
