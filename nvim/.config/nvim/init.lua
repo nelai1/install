@@ -58,6 +58,8 @@ require('packer').startup(function(use)
     use "catppuccin/nvim"
     use "folke/tokyonight.nvim"
     use "rebelot/kanagawa.nvim"
+    use 'wuelnerdotexe/vim-enfocado'
+    use 'arcticicestudio/nord-vim'
 
     use 'tpope/vim-fugitive' -- Git commands in nvim
     use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
@@ -121,9 +123,9 @@ require('packer').startup(function(use)
     use 'vim-test/vim-test'
 
     use {
-  'nvim-lualine/lualine.nvim',
-  requires = { 'kyazdani42/nvim-web-devicons', opt = true }
-}
+        'nvim-lualine/lualine.nvim',
+        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+    }
 
     if not packer_is_there then
         require('packer').sync()
@@ -181,6 +183,7 @@ vim.g.gruvbox_material_background = 'hard'
 vim.g.gruvbox_material_diagnostic_text_highlight = 0
 vim.g.gruvbox_material_foreground = 'material'
 
+vim.cmd [[set bg=dark]]
 vim.cmd [[colorscheme kanagawa]]
 -- vim.cmd [[colorscheme gruvbox-material]]
 
@@ -364,6 +367,11 @@ cmp.setup {
                 buffer = "[Buf]",
                 path = "[path]",
             })[entry.source.name]
+            vim_item.dup = ({
+                buffer = 1,
+                path = 1,
+                nvim_lsp = 0,
+            })[entry.source.name] or 0
             return vim_item
         end,
     },
@@ -372,7 +380,8 @@ cmp.setup.cmdline(':', {
     mapping = cmpm.preset.cmdline(),
     sources = cmp.config.sources({
         { name = 'path' },
-        { name = 'cmdline' } })
+        { name = 'cmdline' }
+    })
 })
 
 cmp.setup.cmdline('/', {
@@ -385,7 +394,8 @@ cmp.setup.cmdline('/', {
 -- =====
 require("mason").setup()
 require("mason-lspconfig").setup({
-        automatic_installation = true,
+    ensure_installed = { "pylint", "black", "isort" },
+    automatic_installation = true,
 })
 local lspconfig = require("lspconfig")
 
@@ -452,11 +462,12 @@ local on_attach = function(client, bufnr)
     lsp_keymaps(bufnr)
     lsp_highlight_document(client)
     require "lsp_signature".on_attach({
-      bind = true, -- This is mandatory, otherwise border config won't get registered.
-        hint_enable=false,
-      handler_opts = {
-        border = "rounded"
-      }}, bufnr)
+        bind = true, -- This is mandatory, otherwise border config won't get registered.
+        hint_enable = false,
+        handler_opts = {
+            border = "rounded"
+        }
+    }, bufnr)
 end
 
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -532,7 +543,7 @@ nullls.setup({ sources = {
     formatting.black,
     formatting.isort,
     formatting.prettier,
-    diagnostics.pylint,
+    -- diagnostics.pylint,
     diagnostics.flake8,
 
     -- shell
@@ -669,7 +680,9 @@ require("nvim-tree").setup({
         },
     },
     actions = {
-        open_file = { window_picker = { enable = false } } } }
+        open_file = { window_picker = { enable = false } }
+    }
+}
 )
 
 -- =====
