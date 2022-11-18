@@ -47,10 +47,12 @@ require('packer').startup(function(use)
     use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
     use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
     use 'kyazdani42/nvim-web-devicons' -- optional, for file icons
+    use 'folke/trouble.nvim' -- pretty diagnostics
 
     -- colors
     -- ======
     use 'cocopon/iceberg.vim'
+    -- use {'arrow2nd/iceberg.vim', branch='fix-treesitter'}
     use "lunarvim/darkplus.nvim"
     use "sainnhe/gruvbox-material"
     use "sainnhe/sonokai"
@@ -60,6 +62,9 @@ require('packer').startup(function(use)
     use "rebelot/kanagawa.nvim"
     use 'wuelnerdotexe/vim-enfocado'
     use 'arcticicestudio/nord-vim'
+    use 'fxn/vim-monochrome'
+    use 'projekt0n/github-nvim-theme'
+    use 'rose-pine/neovim'
 
     use 'tpope/vim-fugitive' -- Git commands in nvim
     use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
@@ -99,6 +104,8 @@ require('packer').startup(function(use)
     use 'williamboman/mason-lspconfig.nvim'
     use 'neovim/nvim-lspconfig' -- base plugin
     use 'jose-elias-alvarez/null-ls.nvim'
+    use "jayp0521/mason-null-ls.nvim" -- easy instal for null-ls packages
+
     -- use('MunifTanjim/prettier.nvim')
 
     -- Telescope
@@ -183,8 +190,11 @@ vim.g.gruvbox_material_background = 'hard'
 vim.g.gruvbox_material_diagnostic_text_highlight = 0
 vim.g.gruvbox_material_foreground = 'material'
 
+require('kanagawa').setup({})
+
 vim.cmd [[set bg=dark]]
 vim.cmd [[colorscheme kanagawa]]
+-- vim.cmd [[colorscheme iceberg]]
 -- vim.cmd [[colorscheme gruvbox-material]]
 
 vim.opt.smartindent = true
@@ -394,7 +404,6 @@ cmp.setup.cmdline('/', {
 -- =====
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = { "pylint", "black", "isort" },
     automatic_installation = true,
 })
 local lspconfig = require("lspconfig")
@@ -425,7 +434,7 @@ vim.diagnostic.config({
 
 -- Set autocommands conditional on server_capabilities
 local function lsp_highlight_document(client)
-    if client.resolved_capabilities.document_highlight then
+    if client.server_capabilities.document_highlight then
         vim.api.nvim_exec(
             [[
       augroup lsp_document_highlight
@@ -446,18 +455,18 @@ local function lsp_keymaps(bufnr)
     keymap_buf(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", options_lsp)
     keymap_buf(bufnr, "n", "<leader>r", "<cmd>lua vim.lsp.buf.rename()<CR>", { desc = 'Rename' })
     keymap_buf(bufnr, "i", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", options_lsp)
-    keymap_buf(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", { desc = 'Format buffer' })
+    keymap_buf(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.format({async= true})<CR>", { desc = 'Format buffer' })
     -- keymap_buf(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", options_lsp)
     -- keymap_buf(bufnr, "n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", options_lsp)
     keymap_buf(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", options_lsp)
     -- keymap_buf(bufnr, "n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", options_lsp)
     -- defines command: Format
-    vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
+    vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatformat({async= true})' ]]
 end
 
 local on_attach = function(client, bufnr)
     if client.name == "tsserver" then
-        client.resolved_capabilities.document_formatting = false
+        client.server_capabilities.document_formatting = false
     end
     lsp_keymaps(bufnr)
     lsp_highlight_document(client)
@@ -470,7 +479,7 @@ local on_attach = function(client, bufnr)
     }, bufnr)
 end
 
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 -- CONFIG PER LANGUAGE
 -- PYTHON
@@ -554,6 +563,10 @@ nullls.setup({ sources = {
     -- diagnostics.mdl,
 
 } })
+
+require("mason-null-ls").setup(
+    { automatic_setup = true, }
+)
 -- =====
 -- Treesitter
 -- =====
@@ -765,3 +778,9 @@ require 'which-key'.register({
 -- feline
 -- ===
 require('lualine').setup()
+
+
+-- ===
+-- trouble
+-- ===
+require("trouble").setup({})
