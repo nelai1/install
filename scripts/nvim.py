@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 from pathlib import Path
+from socket import gethostname
 
 URL_BIN = "https://github.com/neovim/neovim/releases/download/stable/nvim.appimage"
 
@@ -16,12 +17,18 @@ def bin_path() -> Path:
 def local_share() -> Path:
     return Path.home().resolve() / ".local" / "share" / "nvim"
 
+def dotfiles_config_path() -> Path:
+    return Path.home().resolve() / "install/nvim/.config/nvim/init.lua"
 
 def ensure_clean_base_dirs():
-    for p in [config_path(), bin_path()]:
+    for p in [bin_path()]:
         p.parent.mkdir(exist_ok=True)
-        p.unlink()
-    shutil.rmtree(local_share())
+        if p.is_file() or p.is_symlink():
+            print(f'Removing: {p}')
+            p.unlink()
+    for p in [config_path().parent, local_share()]:
+        shutil.rmtree(p)
+        p.mkdir()
 
 
 def download() -> None:
@@ -34,17 +41,26 @@ def download() -> None:
 
 
 def setup_config():
-    URL_CONFIG = (
-        "https://raw.githubusercontent.com/nelai1/"
-        "install/main/nvim/.config/nvim/init.lua"
-    )
-    print("downloading latest config from master")
-    print(URL_CONFIG)
-    cmd = ["wget", str(URL_CONFIG), "-O", str(config_path()), "-q"]
-    _ = subprocess.call(cmd)
+    if gethostname() != 'quickie':
+        URL_CONFIG = (
+            "https://raw.githubusercontent.com/nelai1/"
+            "install/main/nvim/.config/nvim/init.lua"
+        )
+        print("downloading latest config from master")
+        print(URL_CONFIG)
+        cmd = ["wget", str(URL_CONFIG), "-O", str(config_path()), "-q"]
+        _ = subprocess.call(cmd)
+    else:
+        print(f'linking to dotiles {dotfiles_config_path()}')
+        config_path().symlink_to(dotfiles_config_path())
 
 
 if __name__ == "__main__":
     ensure_clean_base_dirs()
     download()
     setup_config()
+    cmd = ['nvim',  '--headless', '-c',  'quitall']
+    _ = subprocess.call(cmd)
+    cmd = "nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'"
+    _ = subprocess.call(cmd, shell=True)
+
