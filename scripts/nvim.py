@@ -4,6 +4,7 @@ from pathlib import Path
 from socket import gethostname
 
 URL_BIN = "https://github.com/neovim/neovim/releases/download/stable/nvim.appimage"
+URL_BIN = 'https://github.com/antoineco/neovim-neovim/releases/download/v0.8.0/nvim.appimage'
 
 
 def config_path() -> Path:
@@ -63,4 +64,5 @@ if __name__ == "__main__":
     _ = subprocess.call(cmd)
     cmd = "nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'"
     _ = subprocess.call(cmd, shell=True)
-
+    cmd = 'nvim --headless +TSUpdateSync +qa'
+    _ = subprocess.call(cmd, shell=True)

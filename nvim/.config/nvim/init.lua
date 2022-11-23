@@ -94,7 +94,7 @@ require('packer').startup(function(use)
 
     -- Treesitter  Highlight, edit, and navigate code
     use { "nvim-treesitter/nvim-treesitter"}
-    use 'nvim-treesitter/nvim-treesitter-textobjects' --  Additional textobjects for treesitter
+    -- use 'nvim-treesitter/nvim-treesitter-textobjects' --  Additional textobjects for treesitter
 
     -- Autocompletion
     use 'hrsh7th/nvim-cmp' -- base plugin
