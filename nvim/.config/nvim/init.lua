@@ -39,7 +39,7 @@ if not packer_is_there then
 
         vim.o.runtimepath = vim.fn.stdpath('data') .. '/site/pack/*/start/*,' .. vim.o.runtimepath
 
-        vim.cmd [[packadd packer.nvim]]
+        vim.cmd.packadd('packer.nvim')
     end
 else
     -- Have packer use a popup window
@@ -64,16 +64,12 @@ require('packer').startup(function(use)
     -- use {'arrow2nd/iceberg.vim', branch='fix-treesitter'}
     use "lunarvim/darkplus.nvim"
     use "sainnhe/gruvbox-material"
-    use "sainnhe/sonokai"
     use "sainnhe/everforest"
     use "catppuccin/nvim"
     use "folke/tokyonight.nvim"
     use "rebelot/kanagawa.nvim"
-    use 'wuelnerdotexe/vim-enfocado'
-    use 'arcticicestudio/nord-vim'
     use 'fxn/vim-monochrome'
     use 'projekt0n/github-nvim-theme'
-    use 'rose-pine/neovim'
 
     use 'tpope/vim-fugitive' -- Git commands in nvim
     use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
@@ -94,7 +90,6 @@ require('packer').startup(function(use)
 
     -- Treesitter  Highlight, edit, and navigate code
     use { "nvim-treesitter/nvim-treesitter" }
-    -- use 'nvim-treesitter/nvim-treesitter-textobjects' --  Additional textobjects for treesitter
 
     -- Autocompletion
     use 'hrsh7th/nvim-cmp' -- base plugin
@@ -114,7 +109,6 @@ require('packer').startup(function(use)
     use 'jose-elias-alvarez/null-ls.nvim'
     use "jayp0521/mason-null-ls.nvim" -- easy instal for null-ls packages
 
-    -- use('MunifTanjim/prettier.nvim')
 
     -- Telescope
     use { "nvim-telescope/telescope.nvim",
@@ -135,10 +129,7 @@ require('packer').startup(function(use)
 
     use 'vim-test/vim-test'
 
-    use {
-        'nvim-lualine/lualine.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
-    }
+    use 'nvim-lualine/lualine.nvim'
     if not packer_is_there then
         print('First ever sync')
         require('packer').sync()
@@ -146,11 +137,6 @@ require('packer').startup(function(use)
 
 end)
 
--- if not packer_is_there then
---     print('Second sync')
---     require('packer').sync()
--- 	do return end
--- end
 -- Automatically source and re-compile packer whenever you save this init.lua
 local packer_group = vim.api.nvim_create_augroup('Packer', { clear = true })
 vim.api.nvim_create_autocmd('BufWritePost', {
@@ -181,11 +167,11 @@ vim.opt.completeopt = 'menuone,longest' -- Set completeopt to have a better comp
 vim.opt.cmdheight = 2 -- more space in command line
 vim.opt.wildmode = 'longest:full,full'
 
---vim.opt.fileencoding = "utf-8"
+vim.opt.fileencoding = "utf-8"
 
 vim.opt.pumheight = 15 -- pop up menu height
-vim.opt.showmode = false -- show stuff like INSERT
-vim.opt.showtabline = 2
+vim.opt.showmode = false -- show stuff like INSERT; don't use since we have lualine
+vim.opt.showtabline = 0
 vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.swapfile = false
@@ -197,6 +183,7 @@ vim.opt.sidescrolloff = 4
 vim.opt.termguicolors = true
 vim.opt.winblend = 15 -- pseudo transperancy: 0 nothing - 100 transparaent
 
+-- colors
 vim.g.tokyonight_style = 'night'
 vim.g.gruvbox_material_background = 'hard'
 vim.g.gruvbox_material_diagnostic_text_highlight = 0
@@ -206,7 +193,7 @@ vim.cmd [[set bg=dark]]
 local is_there, kanagawa = pcall(require, 'kanagawa')
 if is_there then
     kanagawa.setup()
-    vim.cmd [[colorscheme kanagawa]]
+    vim.cmd.colorscheme("kanagawa")
 end
 -- vim.cmd [[colorscheme iceberg]]
 -- vim.cmd [[colorscheme gruvbox-material]]
@@ -219,7 +206,7 @@ vim.opt.expandtab = true -- all tabs are replaces by spaces
 
 -- ===== Filetype
 -- Markdown
-vim.cmd [[ autocmd FileType markdown set conceallevel=2]]
+vim.cmd([[ autocmd FileType markdown set conceallevel=2]])
 --autocmd FileType markdown nmap <buffer><silent> <leader>i :call mdip#MarkdownClipboardImage()<CR>
 
 -- ======
@@ -300,7 +287,6 @@ vim.keymap.set('n', '*', '"syiw<Esc>: let @/ = @s<CR>')
 -- Plugins
 -- ============
 
--- -----
 -- Comment
 -- -----
 -- toggle comment normal or visual mode with:
@@ -309,11 +295,7 @@ vim.keymap.set({ 'n', 'v' }, '<C-_>', ':call nerdcommenter#Comment(0,"toggle")<C
 vim.g.NERDSpaceDelims = true -- add space after comment symbol
 vim.g.NERDCreateDefaultMappings = false
 
--- vim.g.NERDDefaultAlign = 'left'
---vim.keymap.set('v', '<C-c>', ':call nerdcommenter#Comment(0,"sexy")<CR>')
 
-
--- ======
 -- indent_blankline
 -- ======
 -- Show very nice lines for indentation level
@@ -329,7 +311,6 @@ keymap('n', '<leader>i', ':IndentBlanklineToggle<CR>', opts)
 -- ======
 local is_there, gitsigns = pcall(require, 'gitsigns')
 if is_there then
-
     gitsigns.setup {}
 end
 
@@ -338,37 +319,7 @@ end
 -- ======
 local is_there, cmp = pcall(require, "cmp")
 
-
---   פּ ﯟ   some other good icons
-local kind_icons = {
-    Text = "",
-    Method = "m",
-    Function = "",
-    Constructor = "",
-    Field = "",
-    Variable = "",
-    Class = "",
-    Interface = "",
-    Module = "",
-    Property = "",
-    Unit = "",
-    Value = "",
-    Enum = "",
-    Keyword = "",
-    Snippet = "",
-    Color = "",
-    File = "",
-    Reference = "",
-    Folder = "",
-    EnumMember = "",
-    Constant = "",
-    Struct = "",
-    Event = "",
-    Operator = "",
-    TypeParameter = "",
-}
 if is_there then
-    -- find more here: https://www.nerdfonts.com/cheat-sheet
     local cmpm = cmp.mapping
 
     cmp.setup {
@@ -391,9 +342,8 @@ if is_there then
         },
         -- how the completion menu looks (can be removed)
         formatting = {
-            fields = { "kind", "abbr", "menu" },
+            fields = { "abbr", "kind", "menu" },
             format = function(entry, vim_item)
-                vim_item.kind = string.format("%s", kind_icons[vim_item.kind])
                 vim_item.menu = ({
                     nvim_lsp = "[lsp]",
                     nvim_lua = "[nvim_lua]",
@@ -401,11 +351,6 @@ if is_there then
                     buffer = "[Buf]",
                     path = "[path]",
                 })[entry.source.name]
-                vim_item.dup = ({
-                    buffer = 1,
-                    path = 1,
-                    nvim_lsp = 0,
-                })[entry.source.name] or 0
                 return vim_item
             end,
         },
@@ -427,11 +372,10 @@ end
 -- =====
 -- LSP
 -- =====
-local is_there, mason = pcall(require, "mason")
-if is_there then
+local mason_is_there, mason = pcall(require, "mason")
+if mason_is_there then
     mason.setup()
     require("mason-lspconfig").setup({
-        automatic_installation = false,
         ensure_installed = { 'pyright', 'marksman', 'bashls', 'sumneko_lua' }
     })
 end
@@ -485,12 +429,11 @@ local function lsp_keymaps(bufnr)
     keymap_buf(bufnr, "n", "<leader>r", "<cmd>lua vim.lsp.buf.rename()<CR>", { desc = 'Rename' })
     keymap_buf(bufnr, "i", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", options_lsp)
     keymap_buf(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.format({async= true})<CR>", { desc = 'Format buffer' })
-    -- keymap_buf(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", options_lsp)
-    -- keymap_buf(bufnr, "n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", options_lsp)
+    keymap_buf(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", options_lsp)
+    keymap_buf(bufnr, "n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", options_lsp)
     keymap_buf(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", options_lsp)
-    -- keymap_buf(bufnr, "n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", options_lsp)
-    -- defines command: Format
-    vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatformat({async= true})' ]]
+    keymap_buf(bufnr, "n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", options_lsp)
+    vim.cmd([[ command! Format execute 'lua vim.lsp.buf.formatformat({async= true})' ]])
 end
 
 local on_attach = function(client, bufnr)
@@ -508,13 +451,13 @@ local on_attach = function(client, bufnr)
     }, bufnr)
 end
 
-
 if lspconfig_is_there then
     local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
     require('mason-lspconfig').setup_handlers({
         function(server_name)
             local settings = nil
+            -- this is used to make linting of lua.init work correctly
             if server_name == 'sumneko_lua' then
                 settings = {
                     Lua = {
@@ -537,8 +480,6 @@ if lspconfig_is_there then
     })
 end
 
-
-
 -- =====
 -- NULL-LS
 -- =====
@@ -555,31 +496,27 @@ if nullls_is_there then
         formatting.black,
         formatting.isort,
         formatting.prettier,
-        diagnostics.pylint,
+        -- diagnostics.pylint,
         diagnostics.flake8,
 
         -- shell
         formatting.shfmt,
         diagnostics.shellcheck,
-
-
     } })
 
     require("mason-null-ls").setup(
         {
             automatic_installation = true,
-            -- automatic_setup = true,
         }
     )
 end
--- =====
+
 -- Treesitter
 -- =====
-
-local is_there, treesitter = pcall(require, 'nvim-treesitter.configs')
-if is_there then
+local ts_is_there, treesitter = pcall(require, 'nvim-treesitter.configs')
+if ts_is_there then
     treesitter.setup {
-        ensure_installed = { 'lua', 'python', 'markdown', 'bash', 'html', 'javascript' },
+        ensure_installed = { 'lua', 'python', 'markdown', 'bash', 'html', 'javascript', 'vim', 'help' },
         sync_install = true,
         highlight = { enable = true,
             -- additional_vim_regex_highlighting = { "python" },
@@ -589,7 +526,6 @@ if is_there then
     }
 end
 
--- ======
 --Telescope
 -- ======
 local is_there, telescope = pcall(require, "telescope")
@@ -650,14 +586,11 @@ if is_there then
 
     local tb = require('telescope.builtin')
 
-
     -- in vim help: amazing!!!
-    vim.keymap.set('n', '<leader>sh',
-        tb.help_tags, { desc = '[S]earch [H]elp' })
+    vim.keymap.set('n', '<leader>sh', tb.help_tags, { desc = '[S]earch [H]elp' })
 
     -- from pwd down
-    vim.keymap.set('n', '<leader>sf',
-        tb.find_files, { desc = '[S]earch [F]iles' })
+    vim.keymap.set('n', '<leader>sf', tb.find_files, { desc = '[S]earch [F]iles' })
 
     -- grep word under cursor
     vim.keymap.set('n', '<leader>sw',
@@ -713,7 +646,6 @@ if nvimtree_is_there then
     )
 end
 
--- =====
 -- bufferline
 -- =====
 local is_there, bufferline = pcall(require, "bufferline")
@@ -740,7 +672,6 @@ augroup END
 
 vim.cmd [[ command! Q execute ':bwipe!' ]] -- close buffer (unload) and window, close test terminal
 
--- =====
 -- ack
 -- =====
 vim.cmd [[ let g:ackprg = 'ag --vimgrep' ]]
@@ -757,7 +688,6 @@ vim.cmd [[ let g:ackprg = 'ag --vimgrep' ]]
 --
 vim.g.vim_markdown_folding_disabled = true
 
--- ====
 -- test
 -- ====
 vim.g['test#strategy'] = 'neovim'
@@ -765,8 +695,7 @@ vim.g['test#strategy'] = 'neovim'
 -- vim.g['test#neovim#start_normal'] = true
 
 
--- ======
--- whic key
+-- which key
 -- =====
 local is_there, whichkey = pcall(require, 'which-key')
 if is_there then
@@ -783,11 +712,6 @@ if is_there then
 end
 
 
---#region
--- =============== === === === === === === ===
--- =============== === === === === === === ===
--- =============== === === === === === === ===
--- =============== === === === === === === ===
 -- Unsorted
 --autocmd FileType markdown nmap <buffer><silent> <leader>i :call mdip#MarkdownClipboardImage()<CR>
 --" there are some defaults for image directory and image name, you can change them
@@ -796,7 +720,7 @@ end
 --foo
 --
 
--- feline
+-- lualine
 -- ===
 
 local is_there, lualine = pcall(require, 'lualine')
@@ -812,4 +736,5 @@ local is_there, trouble = pcall(require, "trouble")
 if is_there then
     trouble.setup({})
 end
+
 vim.g.python3_host_prog = '/usr/bin/python3'
