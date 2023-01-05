@@ -144,3 +144,9 @@ alias open='xdg-open'
 alias ts='tmux new-session -A -s '
 
 echo 'bash_nice sourced'
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+fi
+set colored-stats on
+set colored-completion-prefix on
