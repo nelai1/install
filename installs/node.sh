@@ -23,3 +23,6 @@ if [ ! -e "${USER_BIN}npm" ] ;then
     echo symlinking "${NODE_VERSION_DIR}bin/${file}" "${USER_BIN}${file}"
 done
 fi
+
+echo To uninstall run:
+echo "sudo rm -r ${NODE_VERSION_DIR}; rm ${USER_BIN}{npm,npx,node}"
