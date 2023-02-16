@@ -424,7 +424,7 @@ local mason_is_there, mason = pcall(require, "mason")
 if mason_is_there then
     mason.setup()
     require("mason-lspconfig").setup({
-        ensure_installed = { 'pyright', 'marksman', 'bashls', 'sumneko_lua' }
+        ensure_installed = { 'pyright', 'marksman', 'bashls', 'lua_ls' }
     })
 end
 local lspconfig_is_there, lspconfig = pcall(require, "lspconfig")

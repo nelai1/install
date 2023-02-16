@@ -4,9 +4,9 @@ from pathlib import Path
 from socket import gethostname
 
 URL_BIN = "https://github.com/neovim/neovim/releases/download/stable/nvim.appimage"
-URL_BIN = (
-    "https://github.com/antoineco/neovim-neovim/releases/download/v0.8.0/nvim.appimage"
-)
+#URL_BIN = (
+#    "https://github.com/antoineco/neovim-neovim/releases/download/v0.8.0/nvim.appimage"
+#)
 
 
 def config_path() -> Path:
