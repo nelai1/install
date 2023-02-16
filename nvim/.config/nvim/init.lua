@@ -70,6 +70,9 @@ require('packer').startup(function(use)
     use "rebelot/kanagawa.nvim"
     use 'fxn/vim-monochrome'
     use 'projekt0n/github-nvim-theme'
+    use 'rose-pine/neovim'
+    use 'rockerBOO/boo-colorscheme-nvim'
+    use 'whatyouhide/vim-gotham'
 
     use 'tpope/vim-fugitive' -- Git commands in nvim
     use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
@@ -311,7 +314,52 @@ keymap('n', '<leader>i', ':IndentBlanklineToggle<CR>', opts)
 -- ======
 local is_there, gitsigns = pcall(require, 'gitsigns')
 if is_there then
-    gitsigns.setup {}
+    gitsigns.setup {
+        signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
+        numhl      = true, -- Toggle with `:Gitsigns toggle_numhl`
+        linehl     = true, -- Toggle with `:Gitsigns toggle_linehl`
+        word_diff  = true, -- Toggle with `:Gitsigns toggle_word_diff`
+
+        on_attach = function(bufnr)
+            local gs = package.loaded.gitsigns
+
+            local function map(mode, l, r, opts)
+                opts = opts or {}
+                opts.buffer = bufnr
+                vim.keymap.set(mode, l, r, opts)
+            end
+
+            -- Navigation
+            map('n', ']c', function()
+                if vim.wo.diff then return ']c' end
+                vim.schedule(function() gs.next_hunk() end)
+                return '<Ignore>'
+            end, { expr = true })
+
+            map('n', '[c', function()
+                if vim.wo.diff then return '[c' end
+                vim.schedule(function() gs.prev_hunk() end)
+                return '<Ignore>'
+            end, { expr = true })
+
+            -- Actions
+            map({ 'n', 'v' }, '<leader>hs', ':Gitsigns stage_hunk<CR>')
+            map({ 'n', 'v' }, '<leader>hr', ':Gitsigns reset_hunk<CR>')
+            map('n', '<leader>hS', gs.stage_buffer)
+            map('n', '<leader>hu', gs.undo_stage_hunk)
+            map('n', '<leader>hR', gs.reset_buffer)
+            map('n', '<leader>hp', gs.preview_hunk)
+            map('n', '<leader>hb', function() gs.blame_line { full = true } end)
+            map('n', '<leader>tb', gs.toggle_current_line_blame)
+            map('n', '<leader>hd', gs.diffthis)
+            map('n', '<leader>hD', function() gs.diffthis('~') end)
+            map('n', '<leader>td', gs.toggle_deleted)
+
+            -- Text object
+            map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+        end
+
+    }
 end
 
 -- ======
@@ -661,16 +709,6 @@ if is_there then
     }
 end
 
--- show what you just yanked
--- ======
-vim.cmd [[
-augroup highlight_yank
-autocmd!
-au TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=700}
-augroup END
-]]
-
-vim.cmd [[ command! Q execute ':bwipe!' ]] -- close buffer (unload) and window, close test terminal
 
 -- ack
 -- =====
@@ -693,6 +731,9 @@ vim.g.vim_markdown_folding_disabled = true
 vim.g['test#strategy'] = 'neovim'
 -- " set this to false to close on key-press
 -- vim.g['test#neovim#start_normal'] = true
+keymap("n", "<leader>tn", ":TestNearest<CR>", { desc = 'test nearest' })
+keymap("n", "<leader>tl", ":TestLast<CR>", { desc = 'test last' })
+keymap("n", "<leader>tf", ":TestFile<CR>", { desc = 'test last' })
 
 
 -- which key
@@ -738,3 +779,23 @@ if is_there then
 end
 
 vim.g.python3_host_prog = '/usr/bin/python3'
+
+------
+-- OWN COMMANDS
+------
+
+-- show what you just yanked
+-- ======
+vim.cmd [[
+augroup highlight_yank
+autocmd!
+au TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=700}
+augroup END
+]]
+
+vim.cmd [[ command! Q execute ':bwipe!' ]] -- close buffer (unload) and window, close test terminal
+
+vim.api.nvim_create_user_command('Gm', 'G commit -m <args>', { nargs = 1 })
+keymap("n", "<leader>G", ":tab G<CR>", { desc = 'git status' })
+keymap("n", "<leader>cc", ":e ~/.config/nvim/init.lua<CR>", { desc = 'config change' })
+keymap("n", "<leader>cs", ":so ~/.config/nvim/init.lua|echo 'sourced' <CR>", { desc = 'config so' })
