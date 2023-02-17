@@ -60,6 +60,7 @@ require('packer').startup(function(use)
 
     -- colors
     -- ======
+    -- I have color scheme issues
     use 'cocopon/iceberg.vim'
     -- use {'arrow2nd/iceberg.vim', branch='fix-treesitter'}
     use "lunarvim/darkplus.nvim"
@@ -441,9 +442,9 @@ end
 vim.diagnostic.config({
     virtual_text = false,
     signs = { active = signs_diagnostic },
-    update_in_insert = true,
+    update_in_insert = false,
     underline = true,
-    severity_sort = false,
+    severity_sort = true,
     float = {
         border = "none", -- seems currently broken try with 'single'
         source = "always",
@@ -506,7 +507,7 @@ if lspconfig_is_there then
         function(server_name)
             local settings = nil
             -- this is used to make linting of lua.init work correctly
-            if server_name == 'sumneko_lua' then
+            if server_name == 'lua_ls' then
                 settings = {
                     Lua = {
                         diagnostics = { globals = { "vim" } },
