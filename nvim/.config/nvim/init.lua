@@ -74,6 +74,7 @@ require('packer').startup(function(use)
     use 'rose-pine/neovim'
     use 'rockerBOO/boo-colorscheme-nvim'
     use 'whatyouhide/vim-gotham'
+    use 'arcticicestudio/nord-vim'
 
     use 'tpope/vim-fugitive' -- Git commands in nvim
     use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
