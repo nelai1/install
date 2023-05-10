@@ -25,6 +25,9 @@
 -- install packer
 -- Use a protected call so we don't error out on first use
 --
+-- disable netrw at the very start of your init.lua (strongly advised)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 local packer_is_there, packer = pcall(require, "packer")
 
 if not packer_is_there then
@@ -52,11 +55,13 @@ if not status_ok then
 end
 
 require('packer').startup(function(use)
-    use 'wbthomason/packer.nvim' -- Packer can manage itself
-    use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
-    use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
-    use 'kyazdani42/nvim-web-devicons' -- optional, for file icons
-    use 'folke/trouble.nvim' -- pretty diagnostics
+    use 'wbthomason/packer.nvim'       -- Packer can manage itself
+    use "nvim-lua/popup.nvim"          -- An implementation of the Popup API from vim in Neovim
+    use "nvim-lua/plenary.nvim"        -- Useful lua functions used ny lots of plugins
+    -- use 'kyazdani42/nvim-web-devicons' -- optional, for file icons
+    use 'nvim-tree/nvim-web-devicons'
+
+    use 'folke/trouble.nvim'           -- pretty diagnostics
 
     -- colors
     -- ======
@@ -76,17 +81,17 @@ require('packer').startup(function(use)
     use 'whatyouhide/vim-gotham'
     use 'arcticicestudio/nord-vim'
 
-    use 'tpope/vim-fugitive' -- Git commands in nvim
-    use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
+    use 'tpope/vim-fugitive'      -- Git commands in nvim
+    use 'tpope/vim-rhubarb'       -- Fugitive-companion to interact with github
     use 'lewis6991/gitsigns.nvim' -- Add git related info in the signs columns and popups
 
     -- quality of life
-    use "machakann/vim-sandwich" -- modify {}, (), etc
-    use 'famiu/bufdelete.nvim' -- just fixes buffer delete - keep window open
-    use 'preservim/nerdcommenter' -- easy commenting
+    use "machakann/vim-sandwich"     -- modify {}, (), etc
+    use 'famiu/bufdelete.nvim'       -- just fixes buffer delete - keep window open
+    use 'preservim/nerdcommenter'    -- easy commenting
     use('lukas-reineke/' ..
-        'indent-blankline.nvim') -- Add indentation guides even on blank lines
-    use 'kyazdani42/nvim-tree.lua' -- tree file browsers
+        'indent-blankline.nvim')     -- Add indentation guides even on blank lines
+    use 'kyazdani42/nvim-tree.lua'   -- tree file browsers
     use { 'akinsho/bufferline.nvim', -- show tabs at top
         tag = "v2.*",
         requires = 'kyazdani42/nvim-web-devicons' }
@@ -97,20 +102,20 @@ require('packer').startup(function(use)
     use { "nvim-treesitter/nvim-treesitter" }
 
     -- Autocompletion
-    use 'hrsh7th/nvim-cmp' -- base plugin
-    use "hrsh7th/cmp-buffer" -- buffer completions
-    use "hrsh7th/cmp-path" -- path completions
-    use "hrsh7th/cmp-cmdline" -- cmdline completions
-    use "hrsh7th/cmp-nvim-lsp" -- language server completion
-    use "hrsh7th/cmp-nvim-lua" -- internal nvim-lua completion
+    use 'hrsh7th/nvim-cmp'         -- base plugin
+    use "hrsh7th/cmp-buffer"       -- buffer completions
+    use "hrsh7th/cmp-path"         -- path completions
+    use "hrsh7th/cmp-cmdline"      -- cmdline completions
+    use "hrsh7th/cmp-nvim-lsp"     -- language server completion
+    use "hrsh7th/cmp-nvim-lua"     -- internal nvim-lua completion
 
-    use "L3MON4D3/LuaSnip" -- needed for cmp snippet engine
+    use "L3MON4D3/LuaSnip"         -- needed for cmp snippet engine
     use "ray-x/lsp_signature.nvim" -- show signature while typoing
 
     -- LSP - language server protocol
-    use 'williamboman/mason.nvim' -- Automatically/easy install language servers to stdpath
+    use 'williamboman/mason.nvim'     -- Automatically/easy install language servers to stdpath
     use 'williamboman/mason-lspconfig.nvim'
-    use 'neovim/nvim-lspconfig' -- base plugin
+    use 'neovim/nvim-lspconfig'       -- base plugin
     use 'jose-elias-alvarez/null-ls.nvim'
     use "jayp0521/mason-null-ls.nvim" -- easy instal for null-ls packages
 
@@ -122,12 +127,20 @@ require('packer').startup(function(use)
     use { 'nvim-telescope/telescope-fzf-native.nvim',
         run = 'make', cond = vim.fn.executable "make" == 1 }
 
+    -- code navigation
+    use 'simrat39/symbols-outline.nvim'
+    use { 'stevearc/aerial.nvim', config = function() require('aerial').setup() end }
+
     -- ====
     -- Language specific
     -- ====
     -- MARKDOWN
-    use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install",
-        setup = function() vim.g.mkdp_filetypes = { "markdown" } end, ft = { "markdown" }, })
+    use({
+        "iamcco/markdown-preview.nvim",
+        run = "cd app && npm install",
+        setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
+        ft = { "markdown" },
+    })
     use 'godlygeek/tabular'
     use 'preservim/vim-markdown'
     use 'ferrine/md-img-paste.vim'
@@ -139,7 +152,6 @@ require('packer').startup(function(use)
         print('First ever sync')
         require('packer').sync()
     end
-
 end)
 
 -- Automatically source and re-compile packer whenever you save this init.lua
@@ -157,24 +169,24 @@ vim.opt.hlsearch = true -- Set highlight on search
 --vim.opt.clipboard = "unnamedplus" -- allows neovim to access the system clipboard
 vim.opt.number = true
 vim.opt.relativenumber = false
-vim.opt.mouse = 'a' -- Enable mouse mode
+vim.opt.mouse = 'a'        -- Enable mouse mode
 vim.opt.breakindent = true -- wrapped lines will have same indentation
-vim.opt.undofile = true -- Save undo history
-vim.opt.ignorecase = true -- Case insensitive searching UNLESS /C or capital in search
+vim.opt.undofile = true    -- Save undo history
+vim.opt.ignorecase = true  -- Case insensitive searching UNLESS /C or capital in search
 vim.opt.smartcase = true
-vim.opt.updatetime = 250 -- Decrease update time
-vim.opt.timeoutlen = 500 -- Decrease update time
+vim.opt.updatetime = 250   -- Decrease update time
+vim.opt.timeoutlen = 500   -- Decrease update time
 vim.opt.signcolumn = 'yes' -- extra space for symbols next to numbers
-vim.opt.showmatch = true -- shortly jump to [{( partner on insert
+vim.opt.showmatch = true   -- shortly jump to [{( partner on insert
 
 --vim.opt.completeopt = 'menu,menuone,noselect' -- Set completeopt to have a better completion experience
 vim.opt.completeopt = 'menuone,longest' -- Set completeopt to have a better completion experience
-vim.opt.cmdheight = 2 -- more space in command line
+vim.opt.cmdheight = 2                   -- more space in command line
 vim.opt.wildmode = 'longest:full,full'
 
 vim.opt.fileencoding = "utf-8"
 
-vim.opt.pumheight = 15 -- pop up menu height
+vim.opt.pumheight = 15   -- pop up menu height
 vim.opt.showmode = false -- show stuff like INSERT; don't use since we have lualine
 vim.opt.showtabline = 0
 vim.opt.splitbelow = true
@@ -182,7 +194,7 @@ vim.opt.splitright = true
 vim.opt.swapfile = false
 vim.opt.cursorline = true
 vim.opt.colorcolumn = '88,89,90' -- indicate text width
-vim.opt.scrolloff = 4 -- keep lines above/below
+vim.opt.scrolloff = 4            -- keep lines above/below
 vim.opt.sidescrolloff = 4
 
 vim.opt.termguicolors = true
@@ -205,9 +217,11 @@ end
 
 vim.opt.smartindent = true
 vim.opt.tabstop = 4
-vim.opt.softtabstop = 4 --tab counts as this many characters
-vim.opt.shiftwidth = 4 --how much to indent by defaul
+vim.opt.softtabstop = 4  --tab counts as this many characters
+vim.opt.shiftwidth = 4   --how much to indent by defaul
 vim.opt.expandtab = true -- all tabs are replaces by spaces
+
+vim.g.ackprg = "ag --vimgrep --ignore-dir notebooks --py -s -H --nocolor --nogroup --column"
 
 -- ===== Filetype
 -- Markdown
@@ -322,7 +336,7 @@ if is_there then
         linehl     = true, -- Toggle with `:Gitsigns toggle_linehl`
         word_diff  = true, -- Toggle with `:Gitsigns toggle_word_diff`
 
-        on_attach = function(bufnr)
+        on_attach  = function(bufnr)
             local gs = package.loaded.gitsigns
 
             local function map(mode, l, r, opts)
@@ -386,7 +400,10 @@ if is_there then
             ["<C-Space>"] = cmpm.complete(),
             ["<C-e>"] = cmpm { i = cmpm.abort(), c = cmpm.close() },
             ["<C-c>"] = cmpm { i = cmpm.abort(), c = cmpm.close() },
-            ["<CR>"] = cmp.mapping.confirm { select = true },
+            -- select true automatically selects the first item
+            -- if always on suggestion is endabled this is often annoying since it
+            -- autocompletes when one wants to enter a new line
+            ["<CR>"] = cmp.mapping.confirm( { select = false }),
             ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 'c' }),
             ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 'c' }),
         },
@@ -417,7 +434,6 @@ if is_there then
         mapping = cmpm.preset.cmdline(),
         sources = { { name = 'buffer' } }
     })
-
 end
 -- =====
 -- LSP
@@ -433,9 +449,9 @@ local lspconfig_is_there, lspconfig = pcall(require, "lspconfig")
 
 local signs_diagnostic = {
     { name = "DiagnosticSignError", text = "" },
-    { name = "DiagnosticSignWarn", text = "" },
-    { name = "DiagnosticSignHint", text = "" },
-    { name = "DiagnosticSignInfo", text = "" },
+    { name = "DiagnosticSignWarn",  text = "" },
+    { name = "DiagnosticSignHint",  text = "" },
+    { name = "DiagnosticSignInfo",  text = "" },
 }
 for _, sign in ipairs(signs_diagnostic) do
     vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
@@ -465,7 +481,7 @@ local function lsp_highlight_document(client)
     autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
     autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
   augroup END
-]]           ,
+]],
             false
         )
     end
@@ -541,18 +557,20 @@ if nullls_is_there then
     -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
     local diagnostics = nullls.builtins.diagnostics
 
-    nullls.setup({ sources = {
-        -- pyhhon
-        formatting.black,
-        formatting.isort,
-        formatting.prettier,
-        -- diagnostics.pylint,
-        diagnostics.flake8,
+    nullls.setup({
+        sources = {
+            -- pyhhon
+            formatting.black,
+            formatting.isort,
+            formatting.prettier,
+            -- diagnostics.pylint,
+            diagnostics.ruff,
 
-        -- shell
-        formatting.shfmt,
-        diagnostics.shellcheck,
-    } })
+            -- shell
+            formatting.shfmt,
+            diagnostics.shellcheck,
+        }
+    })
 
     require("mason-null-ls").setup(
         {
@@ -568,7 +586,8 @@ if ts_is_there then
     treesitter.setup {
         ensure_installed = { 'lua', 'python', 'markdown', 'bash', 'html', 'javascript', 'vim', 'help' },
         sync_install = true,
-        highlight = { enable = true,
+        highlight = {
+            enable = true,
             -- additional_vim_regex_highlighting = { "python" },
             disable = { 'markdown' }
         },
@@ -590,31 +609,25 @@ if is_there then
             prompt_prefix = " ",
             selection_caret = " ",
             path_display = { "smart" },
-
             mappings = {
                 i = {
                     ["<C-c>"] = actions.close,
                     ["<leader>c"] = require('telescope.actions').close,
-                    ["<esc>"] = require('telescope.actions').close, -- you might want to change this, prevents normal mode
+                    ["<esc>"] = require('telescope.actions').close,            -- you might want to change this, prevents normal mode
                     ["<leader><leader>"] = require('telescope.actions').close, -- you might want to change this, prevents normal mode
-
                     ["<Down>"] = actions.move_selection_next,
                     ["<Up>"] = actions.move_selection_previous,
-
                     ["<C-h>"] = actions.select_horizontal, --open in horizontal split
-                    ["<C-v>"] = actions.select_vertical, -- open in veritcal split
-
+                    ["<C-v>"] = actions.select_vertical,   -- open in veritcal split
                     ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
                     ["<C-l>"] = actions.complete_tag,
                     ["<C-/>"] = actions.which_key, -- keys from pressing <C-/>
                 },
-
                 n = {
                     ["<esc>"] = actions.close,
                     ["<C-x>"] = actions.select_horizontal,
                     ["<C-v>"] = actions.select_vertical,
                     ["<C-t>"] = actions.select_tab,
-
                     ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
                     ["<C-/>"] = actions.which_key,
                 },
@@ -676,22 +689,23 @@ end
 -- nvim-tree
 -- =====
 local nvimtree_is_there, nvimtree = pcall(require, "nvim-tree")
+
+local function nvimtree_on_attach(bufnr)
+    local api = require('nvim-tree.api')
+
+    local function opts(desc)
+        return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+    end
+
+
+    -- You will need to insert "your code goes here" for any mappings with a custom action_cb
+    vim.keymap.set('n', 'h', api.node.open.horizontal, opts('Open: Horizontal Split'))
+    vim.keymap.set('n', '<leader>h', api.node.open.horizontal, opts('Open: Horizontal Split'))
+    vim.keymap.set('n', 'v', api.node.open.vertical, opts('Open: Vertical Split'))
+    vim.keymap.set('n', '<leader>v', api.node.open.vertical, opts('Open: Vertical Split'))
+end
 if nvimtree_is_there then
-    nvimtree.setup({
-        view = {
-            adaptive_size = true,
-            mappings = {
-                list = {
-                    { key = "h", action = "split" },
-                    { key = "<leader>h", action = "split" },
-                    { key = "v", action = "vsplit" },
-                    { key = "<leader>v", action = "vsplit" },
-                },
-            },
-        },
-        actions = {
-            open_file = { window_picker = { enable = false } }
-        }
+    nvimtree.setup({ on_attach = nvimtree_on_attach
     }
     )
 end
@@ -801,3 +815,9 @@ vim.api.nvim_create_user_command('Gm', 'G commit -m <args>', { nargs = 1 })
 keymap("n", "<leader>G", ":tab G<CR>", { desc = 'git status' })
 keymap("n", "<leader>cc", ":e ~/.config/nvim/init.lua<CR>", { desc = 'config change' })
 keymap("n", "<leader>cs", ":so ~/.config/nvim/init.lua|echo 'sourced' <CR>", { desc = 'config so' })
+vim.g.ackprg = "ag --vimgrep --ignore-dir notebooks --py"
+
+
+-- Code navigation
+require("symbols-outline").setup()
+require('aerial').setup()
