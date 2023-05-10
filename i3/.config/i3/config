@@ -224,8 +224,9 @@ bindsym $mod+shift+a  exec "xfce4-terminal -T scratchpad --geometry 100x30+100+1
 bindsym $mod+d exec rofi -show run -font "inconsolata 20" 
 bindsym $mod+F2 exec xfce4-appfinder
 
-bindsym $mod+F9 exec NO_CLEANUP=true /home/oleg/bin/emoji-picker --appimage-extract-and-run
-
+# bindsym $mod+F9 exec NO_CLEANUP=true /home/oleg/bin/emoji-picker --appimage-extract-and-run
+bindsym $mod+t exec rofi -modi "emoji:rofimoji" -show emoji
+bindsym $mod+p exec rofimoji
 
 
 # There also is the (new) i3-dmenu-desktop which only displays applications
@@ -265,12 +266,16 @@ bindsym $mod+F8 exec --no-startup-id xrandr --auto
 exec xfsettingsd --sm-client-disable &
 # sound/volumne control
 exec xfce4-volumed &
+exec pasystray &
+exec_always nm-applet &
+# exec volumeicon
+
 # power management/suspension
 exec xfce4-power-manager &
 # make sure suspend locks screen, seems to need lightdm
 # exec light-locker &
 
-exec_always nm-applet &
+
 # the vsync option caused havoc on multi screens
 #exec_always --no-startup-id "compton  --vsync opengl-swc --backend glx -b" 
 # exec_always picom &
@@ -288,4 +293,3 @@ exec blueman-applet
 exec_always setxkbmap -option caps:escape
 # set background image
 exec_always  feh --bg-fill ~/Pictures/wallpaper/bh3.png
-exec volumeicon
