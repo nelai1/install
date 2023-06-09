@@ -1,3 +1,4 @@
+
 # autocompletion
 # ----
 # bash autocompletion for git/ssh/ etc
@@ -64,13 +65,13 @@ fixssh() {
 # notes
 # -----
 # this is for quickly writing notes in vim
-note() { nvim ~/notes/"$1.md" ; }
-notel() { less ~/notes/"$1.md" ; }
-_noteComplet() # autocompletion function for the notes
-{ local cur=${COMP_WORDS[COMP_CWORD]}
-	COMPREPLY=( $(compgen -W "$(ls -1 ${HOME}/notes/| sed -e 's/\.md$//')" -- $cur))
-}
-complete -F _noteComplet note 
+# note() { nvim ~/notes/"$1.md" ; }
+# notel() { less ~/notes/"$1.md" ; }
+# _noteComplet() # autocompletion function for the notes
+# { local cur=${COMP_WORDS[COMP_CWORD]}
+	# COMPREPLY=( $(compgen -W "$(ls -1 ${HOME}/notes/| sed -e 's/\.md$//')" -- $cur))
+# }
+# complete -F _noteComplet note 
 
 
 
@@ -144,10 +145,10 @@ alias open='xdg-open'
 # attach or create new session: e.g. ts work
 alias ts='tmux new-session -A -s '
 
-echo 'bash_nice sourced'
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-fi
-set colored-stats on
-set colored-completion-prefix on
+# echo 'bash_nice sourced'
+# if [ -x /usr/bin/dircolors ]; then
+    # test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    # alias ls='ls --color=auto'
+# fi
+# set colored-stats on
+# set colored-completion-prefix on

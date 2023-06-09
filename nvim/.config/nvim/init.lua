@@ -26,7 +26,7 @@
 -- Use a protected call so we don't error out on first use
 --
 -- disable netrw at the very start of your init.lua (strongly advised)
-vim.g.loaded_netrw = 1
+--vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 local packer_is_there, packer = pcall(require, "packer")
 
@@ -55,13 +55,13 @@ if not status_ok then
 end
 
 require('packer').startup(function(use)
-    use 'wbthomason/packer.nvim'       -- Packer can manage itself
-    use "nvim-lua/popup.nvim"          -- An implementation of the Popup API from vim in Neovim
-    use "nvim-lua/plenary.nvim"        -- Useful lua functions used ny lots of plugins
+    use 'wbthomason/packer.nvim' -- Packer can manage itself
+    use "nvim-lua/popup.nvim"    -- An implementation of the Popup API from vim in Neovim
+    use "nvim-lua/plenary.nvim"  -- Useful lua functions used ny lots of plugins
     -- use 'kyazdani42/nvim-web-devicons' -- optional, for file icons
     use 'nvim-tree/nvim-web-devicons'
 
-    use 'folke/trouble.nvim'           -- pretty diagnostics
+    use 'folke/trouble.nvim' -- pretty diagnostics
 
     -- colors
     -- ======
@@ -403,7 +403,7 @@ if is_there then
             -- select true automatically selects the first item
             -- if always on suggestion is endabled this is often annoying since it
             -- autocompletes when one wants to enter a new line
-            ["<CR>"] = cmp.mapping.confirm( { select = false }),
+            ["<CR>"] = cmp.mapping.confirm({ select = false }),
             ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 'c' }),
             ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 'c' }),
         },
@@ -690,24 +690,23 @@ end
 -- =====
 local nvimtree_is_there, nvimtree = pcall(require, "nvim-tree")
 
-local function nvimtree_on_attach(bufnr)
-    local api = require('nvim-tree.api')
+-- local function nvimtree_on_attach(bufnr)
+-- local api = require('nvim-tree.api')
 
-    local function opts(desc)
-        return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-    end
+-- local function opts(desc)
+-- return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+-- end
 
 
-    -- You will need to insert "your code goes here" for any mappings with a custom action_cb
-    vim.keymap.set('n', 'h', api.node.open.horizontal, opts('Open: Horizontal Split'))
-    vim.keymap.set('n', '<leader>h', api.node.open.horizontal, opts('Open: Horizontal Split'))
-    vim.keymap.set('n', 'v', api.node.open.vertical, opts('Open: Vertical Split'))
-    vim.keymap.set('n', '<leader>v', api.node.open.vertical, opts('Open: Vertical Split'))
-end
+-- -- You will need to insert "your code goes here" for any mappings with a custom action_cb
+-- vim.keymap.set('n', 'h', api.node.open.horizontal, opts('Open: Horizontal Split'))
+-- vim.keymap.set('n', '<leader>h', api.node.open.horizontal, opts('Open: Horizontal Split'))
+-- vim.keymap.set('n', 'v', api.node.open.vertical, opts('Open: Vertical Split'))
+-- vim.keymap.set('n', '<leader>v', api.node.open.vertical, opts('Open: Vertical Split'))
+-- end
 if nvimtree_is_there then
-    nvimtree.setup({ on_attach = nvimtree_on_attach
-    }
-    )
+    -- nvimtree.setup({ on_attach = nvimtree_on_attach })
+    nvimtree.setup()
 end
 
 -- bufferline
