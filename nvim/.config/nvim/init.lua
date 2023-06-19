@@ -128,8 +128,9 @@ require('packer').startup(function(use)
         run = 'make', cond = vim.fn.executable "make" == 1 }
 
     -- code navigation
-    use 'simrat39/symbols-outline.nvim'
     use { 'stevearc/aerial.nvim', config = function() require('aerial').setup() end }
+    use { 'simrat39/symbols-outline.nvim', config = function() require('symbols-outline').setup() end }
+    use 'github/copilot.vim'
 
     -- ====
     -- Language specific
@@ -584,7 +585,7 @@ end
 local ts_is_there, treesitter = pcall(require, 'nvim-treesitter.configs')
 if ts_is_there then
     treesitter.setup {
-        ensure_installed = { 'lua', 'python', 'markdown', 'bash', 'html', 'javascript', 'vim', 'help' },
+        ensure_installed = { 'lua', 'python', 'markdown', 'bash', 'html', 'javascript', 'vim', 'vimdoc' },
         sync_install = true,
         highlight = {
             enable = true,
@@ -746,9 +747,9 @@ vim.g.vim_markdown_folding_disabled = true
 vim.g['test#strategy'] = 'neovim'
 -- " set this to false to close on key-press
 -- vim.g['test#neovim#start_normal'] = true
-keymap("n", "<leader>tn", ":TestNearest<CR>", { desc = 'test nearest' })
-keymap("n", "<leader>tl", ":TestLast<CR>", { desc = 'test last' })
-keymap("n", "<leader>tf", ":TestFile<CR>", { desc = 'test last' })
+keymap("n", "<leader>tn", ":TestNearest -vvv<CR>", { desc = 'test nearest' })
+keymap("n", "<leader>tl", ":TestLast -vvv<CR>", { desc = 'test last' })
+keymap("n", "<leader>tf", ":TestFile -vvv<CR>", { desc = 'test last' })
 
 
 -- which key
@@ -815,8 +816,3 @@ keymap("n", "<leader>G", ":tab G<CR>", { desc = 'git status' })
 keymap("n", "<leader>cc", ":e ~/.config/nvim/init.lua<CR>", { desc = 'config change' })
 keymap("n", "<leader>cs", ":so ~/.config/nvim/init.lua|echo 'sourced' <CR>", { desc = 'config so' })
 vim.g.ackprg = "ag --vimgrep --ignore-dir notebooks --py"
-
-
--- Code navigation
-require("symbols-outline").setup()
-require('aerial').setup()
