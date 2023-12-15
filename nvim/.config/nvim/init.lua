@@ -5,7 +5,6 @@
 -- for opensuse:
 -- `zypper in -t pattern build_basis` -- for Treesitter
 -- `zypper in npm`                    -- for lsp
--- ag-silversearcher                  -- for Ack
 --
 --  Index
 --  Packages
@@ -19,149 +18,113 @@
 -- Today I learned:
 -- Delete till excluding LETTER: dtLETTER
 -- Delete till including LETTER (mnemonic: find): dfLETTER
+--
 -- =====
 -- Packages
 -- =====
--- install packer
--- Use a protected call so we don't error out on first use
---
 -- disable netrw at the very start of your init.lua (strongly advised)
 --vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-local packer_is_there, packer = pcall(require, "packer")
 
-if not packer_is_there then
-    print('We need packer')
-    local install_path = vim.fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
-    if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-        print('Getting packer')
-        print('Install path ' .. install_path)
-        vim.fn.system({
-            'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path
-        })
-
-        vim.o.runtimepath = vim.fn.stdpath('data') .. '/site/pack/*/start/*,' .. vim.o.runtimepath
-
-        vim.cmd.packadd('packer.nvim')
-    end
-else
-    -- Have packer use a popup window
-    packer.init { display = { open_fn = function() return require("packer.util").float { border = "rounded" } end, }, }
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
--- Use a protected call so we don't error out on first use
-local status_ok, packer = pcall(require, "packer")
-if not status_ok then
-    return
-end
+vim.opt.rtp:prepend(lazypath)
 
-require('packer').startup(function(use)
-    use 'wbthomason/packer.nvim' -- Packer can manage itself
-    use "nvim-lua/popup.nvim"    -- An implementation of the Popup API from vim in Neovim
-    use "nvim-lua/plenary.nvim"  -- Useful lua functions used ny lots of plugins
+vim.g.mapleader = " " -- Make sure to set `mapleader` before lazy so your mappings are correct
+
+require("lazy").setup({
+    "folke/which-key.nvim",
+    "nvim-lua/popup.nvim", -- An implementation of the Popup API from vim in Neovim
+    "nvim-lua/plenary.nvim", -- Useful lua functions used ny lots of plugins
     -- use 'kyazdani42/nvim-web-devicons' -- optional, for file icons
-    use 'nvim-tree/nvim-web-devicons'
-
-    use 'folke/trouble.nvim' -- pretty diagnostics
+    'nvim-tree/nvim-web-devicons',
+    'folke/trouble.nvim', -- pretty diagnostics
 
     -- colors
     -- ======
     -- I have color scheme issues
-    use 'cocopon/iceberg.vim'
-    -- use {'arrow2nd/iceberg.vim', branch='fix-treesitter'}
-    use "lunarvim/darkplus.nvim"
-    use "sainnhe/gruvbox-material"
-    use "sainnhe/everforest"
-    use "catppuccin/nvim"
-    use "folke/tokyonight.nvim"
-    use "rebelot/kanagawa.nvim"
-    use 'fxn/vim-monochrome'
-    use 'projekt0n/github-nvim-theme'
-    use 'rose-pine/neovim'
-    use 'rockerBOO/boo-colorscheme-nvim'
-    use 'whatyouhide/vim-gotham'
-    use 'arcticicestudio/nord-vim'
+    'cocopon/iceberg.vim',
+    "sainnhe/gruvbox-material",
+    "sainnhe/everforest",
+    "catppuccin/nvim",
+    "folke/tokyonight.nvim",
+    "rebelot/kanagawa.nvim",
+    'rose-pine/neovim',
+    'arcticicestudio/nord-vim',
 
-    use 'tpope/vim-fugitive'      -- Git commands in nvim
-    use 'tpope/vim-rhubarb'       -- Fugitive-companion to interact with github
-    use 'lewis6991/gitsigns.nvim' -- Add git related info in the signs columns and popups
+    'tpope/vim-fugitive',   -- Git commands in nvim
+    "sindrets/diffview.nvim", -- optional"
+    'tpope/vim-rhubarb',    -- Fugitive-companion to interact with github
+    'lewis6991/gitsigns.nvim', -- Add git related info in the signs columns and popups
 
     -- quality of life
-    use "machakann/vim-sandwich"     -- modify {}, (), etc
-    use 'famiu/bufdelete.nvim'       -- just fixes buffer delete - keep window open
-    use 'preservim/nerdcommenter'    -- easy commenting
-    use('lukas-reineke/' ..
-        'indent-blankline.nvim')     -- Add indentation guides even on blank lines
-    use 'kyazdani42/nvim-tree.lua'   -- tree file browsers
-    use { 'akinsho/bufferline.nvim', -- show tabs at top
-        tag = "v2.*",
-        requires = 'kyazdani42/nvim-web-devicons' }
-    use 'mileszs/ack.vim'
-    use "folke/which-key.nvim" -- show me key bindings
+    "machakann/vim-sandwich", -- modify {}, (), etc
+    'famiu/bufdelete.nvim',  -- just fixes buffer delete - keep window open
+    'preservim/nerdcommenter', -- easy commenting
+    ('lukas-reineke/' ..
+        'indent-blankline.nvim'), -- Add indentation guides even on blank lines
+    'kyazdani42/nvim-tree.lua', -- tree file browsers
+    'akinsho/bufferline.nvim', -- show tabs at top
+    'mileszs/ack.vim',
 
     -- Treesitter  Highlight, edit, and navigate code
-    use { "nvim-treesitter/nvim-treesitter" }
+    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
 
     -- Autocompletion
-    use 'hrsh7th/nvim-cmp'         -- base plugin
-    use "hrsh7th/cmp-buffer"       -- buffer completions
-    use "hrsh7th/cmp-path"         -- path completions
-    use "hrsh7th/cmp-cmdline"      -- cmdline completions
-    use "hrsh7th/cmp-nvim-lsp"     -- language server completion
-    use "hrsh7th/cmp-nvim-lua"     -- internal nvim-lua completion
+    'hrsh7th/nvim-cmp',      -- base plugin
+    "hrsh7th/cmp-buffer",    -- buffer completions
+    "hrsh7th/cmp-path",      -- path completions
+    "hrsh7th/cmp-cmdline",   -- cmdline completions
+    "hrsh7th/cmp-nvim-lsp",  -- language server completion
+    "hrsh7th/cmp-nvim-lua",  -- internal nvim-lua completion
 
-    use "L3MON4D3/LuaSnip"         -- needed for cmp snippet engine
-    use "ray-x/lsp_signature.nvim" -- show signature while typoing
+    "L3MON4D3/LuaSnip",      -- needed for cmp snippet engine
+    "ray-x/lsp_signature.nvim", -- show signature while typoing
 
     -- LSP - language server protocol
-    use 'williamboman/mason.nvim'     -- Automatically/easy install language servers to stdpath
-    use 'williamboman/mason-lspconfig.nvim'
-    use 'neovim/nvim-lspconfig'       -- base plugin
-    use 'jose-elias-alvarez/null-ls.nvim'
-    use "jayp0521/mason-null-ls.nvim" -- easy instal for null-ls packages
+    'williamboman/mason.nvim',  -- Automatically/easy install language servers to stdpath
+    'williamboman/mason-lspconfig.nvim',
+    'neovim/nvim-lspconfig',    -- base plugin
+    'jose-elias-alvarez/null-ls.nvim',
+    "jayp0521/mason-null-ls.nvim", -- easy instal for null-ls packages
 
 
     -- Telescope
-    use { "nvim-telescope/telescope.nvim",
-        requires = { { "nvim-telescope/telescope-live-grep-args.nvim" }, },
-    }
-    use { 'nvim-telescope/telescope-fzf-native.nvim',
-        run = 'make', cond = vim.fn.executable "make" == 1 }
+    {
+        'nvim-telescope/telescope.nvim', dependencies = { 'nvim-lua/plenary.nvim' }
+    },
 
     -- code navigation
-    use { 'stevearc/aerial.nvim', config = function() require('aerial').setup() end }
-    use { 'simrat39/symbols-outline.nvim', config = function() require('symbols-outline').setup() end }
-    use 'github/copilot.vim'
+    { 'stevearc/aerial.nvim',            config = function() require('aerial').setup() end },
+    { 'simrat39/symbols-outline.nvim',   config = function() require('symbols-outline').setup() end },
+    'github/copilot.vim',
 
     -- ====
     -- Language specific
     -- ====
     -- MARKDOWN
-    use({
-        "iamcco/markdown-preview.nvim",
-        run = "cd app && npm install",
-        setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
-        ft = { "markdown" },
-    })
-    use 'godlygeek/tabular'
-    use 'preservim/vim-markdown'
-    use 'ferrine/md-img-paste.vim'
+    -- ({
+    --     "iamcco/markdown-preview.nvim",
+    --     run = "cd app && npm install",
+    --     setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
+    --     ft = { "markdown" },
+    -- })
+    'godlygeek/tabular',
+    'preservim/vim-markdown',
+    'ferrine/md-img-paste.vim',
 
-    use 'vim-test/vim-test'
-
-    use 'nvim-lualine/lualine.nvim'
-    if not packer_is_there then
-        print('First ever sync')
-        require('packer').sync()
-    end
-end)
-
--- Automatically source and re-compile packer whenever you save this init.lua
-local packer_group = vim.api.nvim_create_augroup('Packer', { clear = true })
-vim.api.nvim_create_autocmd('BufWritePost', {
-    command = 'source <afile>|PackerCompile',
-    group = packer_group,
-    pattern = vim.fn.expand '$MYVIMRC',
+    'vim-test/vim-test',
 })
+
 
 -- =====
 -- options
@@ -181,11 +144,12 @@ vim.opt.signcolumn = 'yes' -- extra space for symbols next to numbers
 vim.opt.showmatch = true   -- shortly jump to [{( partner on insert
 
 --vim.opt.completeopt = 'menu,menuone,noselect' -- Set completeopt to have a better completion experience
-vim.opt.completeopt = 'menuone,longest' -- Set completeopt to have a better completion experience
+vim.opt.completeopt = 'menuone,preview' -- Set completeopt to have a better completion experience
 vim.opt.cmdheight = 2                   -- more space in command line
-vim.opt.wildmode = 'longest:full,full'
+-- vim.opt.wildmode = 'longest:full,full'
+vim.opt.wildmode = 'longest:full'
 
-vim.opt.fileencoding = "utf-8"
+--vim.opt.fileencoding = "utf-8"
 
 vim.opt.pumheight = 15   -- pop up menu height
 vim.opt.showmode = false -- show stuff like INSERT; don't use since we have lualine
@@ -320,9 +284,9 @@ vim.g.NERDCreateDefaultMappings = false
 -- ======
 -- Show very nice lines for indentation level
 
-local is_there, indent_blankline = pcall(require, "indent_blankline")
+local is_there, indent_blankline = pcall(require, "ibl")
 if is_there then
-    indent_blankline.setup { indent_blankline_enabled = false, }
+    require("ibl").setup()
 end
 keymap('n', '<leader>i', ':IndentBlanklineToggle<CR>', opts)
 
@@ -450,9 +414,9 @@ local lspconfig_is_there, lspconfig = pcall(require, "lspconfig")
 
 local signs_diagnostic = {
     { name = "DiagnosticSignError", text = "" },
-    { name = "DiagnosticSignWarn",  text = "" },
-    { name = "DiagnosticSignHint",  text = "" },
-    { name = "DiagnosticSignInfo",  text = "" },
+    { name = "DiagnosticSignWarn", text = "" },
+    { name = "DiagnosticSignHint", text = "" },
+    { name = "DiagnosticSignInfo", text = "" },
 }
 for _, sign in ipairs(signs_diagnostic) do
     vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
@@ -589,7 +553,6 @@ if ts_is_there then
         sync_install = true,
         highlight = {
             enable = true,
-            -- additional_vim_regex_highlighting = { "python" },
             disable = { 'markdown' }
         },
         indent = { enable = true },
@@ -603,7 +566,7 @@ local is_there, telescope = pcall(require, "telescope")
 if is_there then
     pcall(require('telescope').load_extension, 'fzf')
     local actions = require "telescope.actions"
-    local lga_actions = require("telescope-live-grep-args.actions")
+    -- local lga_actions = require("telescope-live-grep-args.actions")
 
     telescope.setup {
         defaults = {
@@ -614,12 +577,12 @@ if is_there then
                 i = {
                     ["<C-c>"] = actions.close,
                     ["<leader>c"] = require('telescope.actions').close,
-                    ["<esc>"] = require('telescope.actions').close,            -- you might want to change this, prevents normal mode
+                    ["<esc>"] = require('telescope.actions').close, -- you might want to change this, prevents normal mode
                     ["<leader><leader>"] = require('telescope.actions').close, -- you might want to change this, prevents normal mode
                     ["<Down>"] = actions.move_selection_next,
                     ["<Up>"] = actions.move_selection_previous,
                     ["<C-h>"] = actions.select_horizontal, --open in horizontal split
-                    ["<C-v>"] = actions.select_vertical,   -- open in veritcal split
+                    ["<C-v>"] = actions.select_vertical, -- open in veritcal split
                     ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
                     ["<C-l>"] = actions.complete_tag,
                     ["<C-/>"] = actions.which_key, -- keys from pressing <C-/>
@@ -639,9 +602,9 @@ if is_there then
                 auto_quoting = true, -- enable/disable auto-quoting
                 mappings = {
                     i = {
-                        ["<C-k>"] = lga_actions.quote_prompt(),
-                        ["<C-l>g"] = lga_actions.quote_prompt({ postfix = ' --iglob ' }),
-                        ["<C-l>t"] = lga_actions.quote_prompt({ postfix = ' -t' }),
+                        -- ["<C-k>"] = lga_actions.quote_prompt(),
+                        -- ["<C-l>g"] = lga_actions.quote_prompt({ postfix = ' --iglob ' }),
+                        -- ["<C-l>t"] = lga_actions.quote_prompt({ postfix = ' -t' }),
                     }
                 }
             }
@@ -663,7 +626,8 @@ if is_there then
     -- open rg window
     -- vim.keymap.set('n', '<leader>sg', tb.live_grep, { desc = '[S]earch by [G]rep' })
     vim.keymap.set("n", "<leader>sg",
-        ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>", { desc = '[S]earch by [G]rep' })
+        ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>",
+        { desc = '[S]earch by [G]rep' })
 
 
     -- basically minibuf of diagnostics

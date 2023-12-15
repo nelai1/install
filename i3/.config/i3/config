@@ -173,12 +173,22 @@ bindsym $mod+i resize grow height 2 px or 2 ppt
 bindsym $mod+u resize shrink height 2 px or 2 ppt
 bindsym $mod+y resize grow width 2 px or 2 ppt
 
+# ===
+# Lock
+# ===
+set $locker "i3lock -c 000000 -e --show-failed-attempts"
+
+
+# xss listens to systemd power events and display power events
+# if we suspend/sleep/hybernate or similar, activate the lock
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -c 000000 -e --nofork
+
 # Power Menu
 # ==========
 set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (p) shutdown
 mode "$mode_system" {
-    bindsym l exec --no-startup-id i3lock -c 000000, mode "default"
-    bindsym e exec --no-startup-id i3-msg exit, mode "default"
+    bindsym l exec --no-startup-id loginctl lock-session, mode "default"
+    bindsym o exec --no-startup-id i3-msg exit, mode "default"
     bindsym s exec --no-startup-id systemctl suspend, mode "default"
     bindsym h exec --no-startup-id systemctl hibernate, mode "default"
     bindsym r exec --no-startup-id systemctl reboot, mode "default"
@@ -221,7 +231,7 @@ bindsym $mod+shift+a  exec "xfce4-terminal -T scratchpad --geometry 100x30+100+1
 
 #bindsym $mod+d exec dmenu_run -l 
 #bindsym $mod+d exec rofi -modi combi -combi-modi "window#run" -theme lb -font "hack 16" -show combi   
-bindsym $mod+d exec rofi -show run -font "inconsolata 20" 
+bindsym $mod+d exec rofi -show drun -font "hack 20" -show-icons
 bindsym $mod+F2 exec xfce4-appfinder
 
 # bindsym $mod+F9 exec NO_CLEANUP=true /home/oleg/bin/emoji-picker --appimage-extract-and-run
@@ -254,42 +264,70 @@ bindsym $mod+F7 exec /home/oleg/.screenlayout/i3work_tv.sh
 bindsym $mod+F8 exec --no-startup-id xrandr --auto 
 
 
-# Scaling of everything in .XResources -  here only gui elements
-# use xfce4-appearance settings
-# exec xrandr --dpi 144 
-#--------------------------------Autostart
-# --no-startup-id
-# * do not show watch pointer (otherwise max 60 sec)
-# * launch on workspace where used
-# I think this is really only needed if the clock hangs around
-# ===============XFCE version =============
+# ====
+# Autostart
+# ====
+
+# explenation:
+#  `no-startup-id` has very little impact. It skips the startup notification.
+#     if an application is not startup aware you will see spinner for 60sec
+
+# polkit 
+exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
+
+# remember ssh key password, only type in once
+# ---
+# needs Add auth optional pam_gnome_keyring.so at the end of the auth section and session optional pam_gnome_keyring.so auto_start at the end of the session section. 
+exec /usr/bin/gnome-keyring-daemon --start --components=secrets
+exec /usr/bin/gnome-keyring-daemon --start --components=ssh
+
+
+# settings deamnon for xfce
+# darkmode persistent/ seems like it also starts the notification daemon
 exec xfsettingsd --sm-client-disable &
+
+# printer applet
+#---
+exec system-config-printer-applet
+
+# network manager
+#---
+exec nm-applet &
+
 # sound/volumne control
-exec xfce4-volumed &
-exec pasystray &
-exec_always nm-applet &
-# exec volumeicon
+#---
+# exec pasystray &
+exec volumeicon &
+# exec_always mate-volume-control-status-icon&
 
-# power management/suspension
+# notification daemon
+#---
+# exec dunst &
+exec /usr/lib/x86_64-linux-gnu/xfce4/notifyd/xfce4-notifyd
+
+# color management why not
+exec xiccd
+
+
+# power management
 exec xfce4-power-manager &
-# make sure suspend locks screen, seems to need lightdm
-# exec light-locker &
+
+# compositor: make stuff transparent
+exec_always picom &
+
+# bluetooth
+#---
+exec blueman-applet &
+
+# set background image
+exec_always  feh --bg-fill ~/Pictures/wallpaper/bh3.png &
+
+# snap
+# ---
+exec /usr/bin/snap userd --autostart
 
 
-# the vsync option caused havoc on multi screens
-#exec_always --no-startup-id "compton  --vsync opengl-swc --backend glx -b" 
-# exec_always picom &
-
-exec blueman-applet
-
-#exec insync start
-
-# kill runnning ssh agent
-#exec pgrep ssh-agent| xargs kill
-
-# Niceties
+# Settings
 # ---
 # map capslock to escape
-exec_always setxkbmap -option caps:escape
-# set background image
-exec_always  feh --bg-fill ~/Pictures/wallpaper/bh3.png
+exec_always setxkbmap -option caps:escape &
